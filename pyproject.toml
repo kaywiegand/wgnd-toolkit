@@ -1,0 +1,52 @@
+# pyproject.toml – wgnd · Wiegand Data Toolkit
+
+[build-system]
+requires      = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name        = "wgnd"
+version     = "0.2.0"
+description = "Wiegand Data Toolkit – EDA & Visualisierung für DAN & DSC Projekte"
+readme      = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    # ── Kern ─────────────────────────────────────────────────────────────
+    "pandas>=2.0",
+    "numpy>=1.24",
+
+    # ── Visualisierung ────────────────────────────────────────────────────
+    "matplotlib>=3.7",
+    "seaborn>=0.13",
+
+    # ── Output & Notebook ─────────────────────────────────────────────────
+    "rich>=13.0",
+    "ipython>=8.0",
+    "ipykernel>=6.0",
+    "jinja2>=3.0",
+    "nbformat>=4.2.0",
+]
+
+[project.optional-dependencies]
+dsc = [
+    "scikit-learn>=1.3",
+    "xgboost>=2.0",
+    "joblib>=1.3",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "ruff>=0.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.black]
+line-length    = 100
+target-version = ["py310"]
