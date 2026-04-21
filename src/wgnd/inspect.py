@@ -381,7 +381,7 @@ def inspect_categorical_stats(df: pd.DataFrame) -> pd.DataFrame:
         DataFrame mit: column, missing_pct, missing_cnt, uniques,
                        top_value, top_value_cnt, top_value_freq_pct
     """
-    cat_df = df.select_dtypes(include=["object", "category", "bool", "str"])
+    cat_df = df.select_dtypes(include=["object", "category", "bool", "string"])
 
     section_header("categorical stats")
 
