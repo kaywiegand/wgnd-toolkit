@@ -39,10 +39,11 @@ class WgndConfig:
     COLOR_NEGATIVE: str = "#de425b"   # Rot    → explizit negativ / Risiko
     COLOR_NEUTRAL:  str = "#8c8c8c"   # Grau   → neutrale Referenzlinie
 
-    # ── Kategorische Palette — 7 Farben harmonisch ────────────────────────
-    # Quelle: learnui.design  — keine Standard-Signalfarben
-    # Einsatz: bar, scatter, pie, groupby
-    PALETTE_CATEGORICAL: list[str] = [
+    # ── Paletten ──────────────────────────────────────────────────────────
+    # Alle Paletten stehen zur Auswahl — aktive Palette: cfg.ACTIVE_PALETTE
+    # Wechseln mit: cfg.use_palette("ocean") oder cfg.use_palette("pink_teal")
+
+    PALETTE_OCEAN: list[str] = [        # Standard — Blau → Orange (learnui.design)
         "#003d5c",   # Deep Blue
         "#31497e",   # Indigo
         "#674f95",   # Purple
@@ -52,41 +53,45 @@ class WgndConfig:
         "#ff7a47",   # Orange
     ]
 
-    # ── Pink → Teal — zweite kategorische Palette ─────────────────────────
-    # Einsatz: zweite Datenserie, Vergleichs-Palette
-    PALETTE_PINK_TEAL: list[str] = [
-        "#d44c8d",
-        "#f9596f",
-        "#ff7a47",
-        "#003d5c",
-        "#00546e",
-        "#006b71",
-        "#008162",
-        "#009446",
-        "#65a31c",
-        "#b1aa00",
+    PALETTE_PINK_TEAL: list[str] = [    # Pink → Teal
+        "#d44c8d", "#f9596f", "#ff7a47",
+        "#003d5c", "#00546e", "#006b71",
+        "#008162", "#009446", "#65a31c", "#b1aa00",
     ]
 
-    # ── Business Blues sequential (9 Stufen, dunkel→hell) ─────────────────
-    # Einsatz: Heatmaps mit positivem Bereich, single-color Füllungen
-    PALETTE_BLUE_RANGE: list[str] = [
+    PALETTE_BLUE_RANGE: list[str] = [   # Sequential Blau dunkel→hell
         "#004c6d", "#215d7e", "#366e8f", "#4a80a1",
         "#5e93b3", "#71a5c6", "#84b9d9", "#98ccec", "#ace0ff",
     ]
 
-    # ── Business Blues Light sequential ───────────────────────────────────
-    PALETTE_BLUE_LIGHT: list[str] = [
+    PALETTE_BLUE_LIGHT: list[str] = [   # Sequential Blau hell
         "#004c6d", "#125e7f", "#217192", "#3085a5", "#3e99b7",
         "#4dadc9", "#5dc2dc", "#6dd7ed", "#7eedff",
     ]
 
-    # ── Divergente Palette (13 Stufen Grün↔Creme↔Rot) ────────────────────
-    # Einsatz: Korrelations-Heatmaps, Abweichungen vom Nullpunkt
-    PALETTE_DIVERGENT: list[str] = [
+    PALETTE_DIVERGENT: list[str] = [    # Divergent Grün↔Creme↔Rot
         "#00876c", "#4b9a76", "#75ad83", "#9bc193", "#bed4a7",
         "#e0e8be", "#fffcd7",
         "#f5e2b1", "#efc68f", "#eaa872", "#e5885e", "#de6553", "#d43d51",
     ]
+
+    # ── Standard-Palette — hier wechseln um den Default zu ändern ────────
+    PALETTE_STANDARD = PALETTE_OCEAN
+
+    def __init__(self) -> None:
+        self.ACTIVE_PALETTE: list[str] = self.PALETTE_STANDARD
+
+    def use_palette(self, name: str) -> None:
+        """Aktive Palette wechseln. Verfügbar: 'ocean', 'pink_teal', 'blue_range', 'blue_light'"""
+        registry = {
+            "ocean":      self.PALETTE_OCEAN,
+            "pink_teal":  self.PALETTE_PINK_TEAL,
+            "blue_range": self.PALETTE_BLUE_RANGE,
+            "blue_light": self.PALETTE_BLUE_LIGHT,
+        }
+        if name not in registry:
+            raise ValueError(f"Unbekannte Palette: '{name}'. Verfügbar: {list(registry)}")
+        self.ACTIVE_PALETTE = registry[name]
 
     # ── Chart-Stil ────────────────────────────────────────────────────────
     CHART_BG:        str = "#ffffff"

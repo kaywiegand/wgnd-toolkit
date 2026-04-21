@@ -275,7 +275,7 @@ def _plot_missing_heatmap(df: pd.DataFrame, transpose: bool = True) -> None:
     sns.heatmap(
         data,
         cbar=False,
-        cmap=["#f5f5f5", cfg.PALETTE_CATEGORICAL[3]],
+        cmap=["#f5f5f5", cfg.ACTIVE_PALETTE[3]],
         xticklabels=False,
         yticklabels=True,
         ax=ax,
@@ -510,7 +510,7 @@ def inspect_correlations(
         if hue_col and hue_col in df.columns:
             plot_df[hue_col] = df[hue_col]
             uvals   = sorted(df[hue_col].dropna().unique())
-            palette = {v: cfg.PALETTE_CATEGORICAL[i % len(cfg.PALETTE_CATEGORICAL)]
+            palette = {v: cfg.ACTIVE_PALETTE[i % len(cfg.ACTIVE_PALETTE)]
                        for i, v in enumerate(uvals)}
 
         g = sns.pairplot(
@@ -657,7 +657,7 @@ def inspect_outlier_detail(
     palette = None
     if hue and hue in df.columns:
         uvals   = sorted(df[hue].dropna().unique())
-        palette = {v: cfg.PALETTE_CATEGORICAL[i % len(cfg.PALETTE_CATEGORICAL)]
+        palette = {v: cfg.ACTIVE_PALETTE[i % len(cfg.ACTIVE_PALETTE)]
                    for i, v in enumerate(uvals)}
 
     sns.histplot(
@@ -669,7 +669,7 @@ def inspect_outlier_detail(
     # IQR-Linien auf beiden Achsen
     vlines = [
         (mean,  cfg.COLOR_SIGNAL,   "-",  1.8, f"Mean: {_r(mean)}"),
-        (median, cfg.PALETTE_CATEGORICAL[2], "-", 1.8, f"Median: {_r(median)}"),
+        (median, cfg.ACTIVE_PALETTE[2], "-", 1.8, f"Median: {_r(median)}"),
         (l15,   cfg.COLOR_SIGNAL,   ":",  1.2, f"1.5× IQR lower"),
         (u15,   cfg.COLOR_SIGNAL,   ":",  1.2, f"1.5× IQR upper  ({c15} outliers)"),
         (l30,   cfg.COLOR_NEGATIVE, ":",  1.2, f"3× IQR lower"),

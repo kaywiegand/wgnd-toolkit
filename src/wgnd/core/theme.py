@@ -53,7 +53,7 @@ def setup_matplotlib() -> None:
             "axes.labelcolor":    cfg.CHART_LABEL,
             "axes.labelsize":     12,
             "axes.labelpad":      8,
-            "axes.prop_cycle":    mpl.cycler(color=cfg.PALETTE_CATEGORICAL),
+            "axes.prop_cycle":    mpl.cycler(color=cfg.ACTIVE_PALETTE),
 
             # Grid – dezent, nur horizontale Linien (sauberer)
             "axes.grid":          True,
@@ -91,7 +91,7 @@ def setup_seaborn() -> None:
         import seaborn as sns
         sns.set_theme(
             style="white",
-            palette=cfg.PALETTE_CATEGORICAL,
+            palette=cfg.ACTIVE_PALETTE,
             rc={
                 "axes.spines.top":   False,
                 "axes.spines.right": False,

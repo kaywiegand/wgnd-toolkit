@@ -47,7 +47,7 @@ def show_palettes() -> None:
     Nützlich zum Nachschlagen im Notebook.
     """
     palettes = {
-        "PALETTE_CATEGORICAL (kategorisch)": cfg.PALETTE_CATEGORICAL,
+        "PALETTE_CATEGORICAL (kategorisch)": cfg.ACTIVE_PALETTE,
         "PALETTE_BUSINESS (sequential)":     cfg.PALETTE_BUSINESS,
         "PALETTE_DIVERGENT (divergent)":     cfg.PALETTE_DIVERGENT,
         "Signals":                           [
@@ -138,14 +138,14 @@ def bar(
         values = data[y].values
 
     n     = len(cats)
-    c     = color or cfg.PALETTE_CATEGORICAL[0]
+    c     = color or cfg.ACTIVE_PALETTE[0]
     colors = [c] * n
 
     if highlight_top_n:
         sorted_idx = np.argsort(values)[::-1]
         colors = [cfg.COLOR_NEUTRAL] * n
         for i in sorted_idx[:highlight_top_n]:
-            colors[i] = cfg.PALETTE_CATEGORICAL[0]
+            colors[i] = cfg.ACTIVE_PALETTE[0]
 
     fig, ax = plt.subplots(figsize=figsize or cfg.MPL_FIGSIZE)
 
@@ -202,7 +202,7 @@ def stacked_bar(
     if normalize:
         ct *= 100
 
-    c  = colors or [cfg.COLOR_NEUTRAL, cfg.PALETTE_CATEGORICAL[0]]
+    c  = colors or [cfg.COLOR_NEUTRAL, cfg.ACTIVE_PALETTE[0]]
     fig, ax = plt.subplots(figsize=figsize or cfg.MPL_FIGSIZE)
 
     ct.plot(kind="barh" if orient == "h" else "bar", stacked=True,
@@ -247,7 +247,7 @@ def dual_axis(
         (fig, ax1, ax2)
     """
     style = mpl_style()
-    bc    = bar_color  or cfg.PALETTE_CATEGORICAL[0]
+    bc    = bar_color  or cfg.ACTIVE_PALETTE[0]
     lc    = line_color or cfg.COLOR_NEGATIVE
 
     fig, ax1 = plt.subplots(figsize=figsize or (14, 6))
@@ -297,7 +297,7 @@ def line(
         ref_lines: [{"y": 0.5, "label": "Threshold", "style": "signal"}]
                    style: 'signal' (amber), 'refline' (grau), 'neg' (rot)
         spans:     [{"x0": 3, "x1": 5, "label": "Risk Zone",
-                     "color": cfg.PALETTE_CATEGORICAL[0], "alpha": 0.15}]
+                     "color": cfg.ACTIVE_PALETTE[0], "alpha": 0.15}]
 
     Returns:
         (fig, ax)
@@ -307,15 +307,15 @@ def line(
 
     if isinstance(data, pd.Series):
         ax.plot(data.index, data.values,
-                color=cfg.PALETTE_CATEGORICAL[0], linewidth=1.8)
+                color=cfg.ACTIVE_PALETTE[0], linewidth=1.8)
     else:
         if hue:
             for i, (name, group) in enumerate(data.groupby(hue)):
-                c = cfg.PALETTE_CATEGORICAL[i % len(cfg.PALETTE_CATEGORICAL)]
+                c = cfg.ACTIVE_PALETTE[i % len(cfg.ACTIVE_PALETTE)]
                 ax.plot(group[x], group[y], color=c, linewidth=1.8, label=str(name))
             ax.legend()
         else:
-            ax.plot(data[x], data[y], color=cfg.PALETTE_CATEGORICAL[0], linewidth=1.8)
+            ax.plot(data[x], data[y], color=cfg.ACTIVE_PALETTE[0], linewidth=1.8)
 
     for rl in (ref_lines or []):
         s   = rl.get("style", "refline")
@@ -325,7 +325,7 @@ def line(
 
     for sp in (spans or []):
         ax.axvspan(sp["x0"], sp["x1"],
-                   color=sp.get("color", cfg.PALETTE_CATEGORICAL[0]),
+                   color=sp.get("color", cfg.ACTIVE_PALETTE[0]),
                    alpha=sp.get("alpha", 0.15),
                    label=sp.get("label", ""))
 
@@ -386,11 +386,11 @@ def scatter_highlight(
         for i, v in enumerate(uvals):
             sub = df[df[hue] == v]
             ax.scatter(sub[x], sub[y],
-                       color=cfg.PALETTE_CATEGORICAL[i % len(cfg.PALETTE_CATEGORICAL)],
+                       color=cfg.ACTIVE_PALETTE[i % len(cfg.ACTIVE_PALETTE)],
                        alpha=0.5, s=20, label=str(v))
         ax.legend(title=hue, fontsize=10)
     else:
-        ax.scatter(df[x], df[y], color=cfg.PALETTE_CATEGORICAL[0], alpha=0.5, s=20)
+        ax.scatter(df[x], df[y], color=cfg.ACTIVE_PALETTE[0], alpha=0.5, s=20)
 
     if ref_h is not None:
         ax.axhline(ref_h, **style["signal"])
@@ -443,7 +443,7 @@ def grid_histplot(
     palette = None
     if hue and hue in df.columns:
         uvals   = sorted(df[hue].dropna().unique())
-        palette = {v: cfg.PALETTE_CATEGORICAL[i % len(cfg.PALETTE_CATEGORICAL)]
+        palette = {v: cfg.ACTIVE_PALETTE[i % len(cfg.ACTIVE_PALETTE)]
                    for i, v in enumerate(uvals)}
 
     for i, col in enumerate(num_cols):
@@ -500,7 +500,7 @@ def grid_scatter(
     palette = None
     if hue and hue in df.columns:
         uvals   = sorted(df[hue].dropna().unique())
-        palette = {v: cfg.PALETTE_CATEGORICAL[i % len(cfg.PALETTE_CATEGORICAL)]
+        palette = {v: cfg.ACTIVE_PALETTE[i % len(cfg.ACTIVE_PALETTE)]
                    for i, v in enumerate(uvals)}
 
     for i, (xf, yf) in enumerate(combinations):
