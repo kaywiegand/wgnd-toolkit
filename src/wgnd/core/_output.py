@@ -33,6 +33,7 @@ from wgnd.core.config import cfg
 #   from wgnd.core._output import console
 #   console.print("[bold]Mein Text[/]")
 console = Console()
+_stdout_console = Console(force_terminal=True, highlight=False)  # compact in Jupyter
 
 # ── Interner Logger (nur für Warnungen/Fehler im Code) ────────────────────
 _log = logging.getLogger("wgnd")
@@ -219,4 +220,4 @@ def log(msg: str, symbol: str | None = None, color: str | None = None) -> None:
     """Neutrale Ausgabe im Stil der Inspect-Headlines. Symbol und Farbe optional."""
     prefix = f"{symbol}  " if symbol else ""
     clr    = color or cfg.PRIMARY_COLOR
-    console.print(f"[{clr}]{prefix}{msg}[/]")
+    _stdout_console.print(f"[{clr}]{prefix}{msg}[/]")
