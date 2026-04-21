@@ -175,8 +175,9 @@ def show_df(
                 ("background-color", "#eef3f8"),
             ]},
         ])
-        .hide(axis="index" if not show_index else None)
         )
+        if not show_index:
+            styler = styler.hide(axis="index")
 
         if highlight_col and highlight_col in df.columns:
             styler = styler.map(
