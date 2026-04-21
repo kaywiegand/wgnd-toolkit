@@ -51,7 +51,12 @@ _ALL_SECTIONS = [
 _SECTION_FN: dict = {}
 
 
-def inspect(df: pd.DataFrame, sections: list[str] | None = None) -> dict:
+def inspect(
+    df: pd.DataFrame,
+    sections: list[str] | None = None,
+    columns: list[str] | None = None,
+    title: str | None = None,
+) -> None:
     """
     Vollständige EDA-Übersicht.
 
@@ -61,10 +66,12 @@ def inspect(df: pd.DataFrame, sections: list[str] | None = None) -> dict:
                   Werte: 'dimensions', 'memory', 'dtypes', 'names',
                   'missing', 'duplicates', 'numeric', 'categorical',
                   'correlations', 'outliers'
-
-    Returns:
-        dict[section → result]
+        columns:  Spaltenliste — wird an 'numeric', 'categorical', 'outliers' weitergegeben.
+        title:    Alternativer Titel — wird an 'numeric', 'categorical' weitergegeben.
     """
+    _COLUMNS_SUPPORT = {"numeric", "categorical", "outliers"}
+    _TITLE_SUPPORT   = {"numeric", "categorical"}
+
     to_run = sections or _ALL_SECTIONS
     for name in to_run:
         fn = _SECTION_FN.get(name)
@@ -72,7 +79,12 @@ def inspect(df: pd.DataFrame, sections: list[str] | None = None) -> dict:
             warn(f"Unknown section: '{name}' — skipped.")
             continue
         try:
-            fn(df)
+            kwargs = {}
+            if columns is not None and name in _COLUMNS_SUPPORT:
+                kwargs["columns"] = columns
+            if title is not None and name in _TITLE_SUPPORT:
+                kwargs["title"] = title
+            fn(df, **kwargs)
         except Exception as exc:
             console.print(f"[{cfg.ERROR_COLOR}]✗  Error in '{name}': {exc}[/]")
     return None
