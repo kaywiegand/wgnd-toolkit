@@ -84,6 +84,7 @@ def info_box(data: dict[str, Any], title: str = "") -> None:
         Panel(
             table,
             title=panel_title,
+            title_align="left",
             border_style=cfg.PRIMARY_COLOR,
             padding=cfg.PANEL_PADDING,
         )
@@ -206,3 +207,10 @@ def error(msg: str) -> None:
 def success(msg: str) -> None:
     """Zeigt eine grüne Erfolgsmeldung."""
     console.print(f"[{cfg.PRIMARY_COLOR}]✓  {msg}[/]")
+
+
+def log(msg: str, symbol: str | None = None, color: str | None = None) -> None:
+    """Neutrale Ausgabe im Stil der Inspect-Headlines. Symbol und Farbe optional."""
+    prefix = f"{symbol}  " if symbol else ""
+    clr    = color or cfg.PRIMARY_COLOR
+    console.print(f"[{clr}]{prefix}{msg}[/]")

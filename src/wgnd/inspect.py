@@ -66,17 +66,16 @@ def inspect(df: pd.DataFrame, sections: list[str] | None = None) -> dict:
         dict[section → result]
     """
     to_run = sections or _ALL_SECTIONS
-    results: dict = {}
     for name in to_run:
         fn = _SECTION_FN.get(name)
         if fn is None:
             warn(f"Unknown section: '{name}' — skipped.")
             continue
         try:
-            results[name] = fn(df)
+            fn(df)
         except Exception as exc:
             console.print(f"[{cfg.ERROR_COLOR}]✗  Error in '{name}': {exc}[/]")
-    return results
+    return None
 
 
 # ─── 1 · Dimensions ───────────────────────────────────────────────────────────
@@ -142,10 +141,8 @@ def inspect_memory(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     section_header("memory")
-    console.print(
-        f"[dim]Total: {_r(total_kb)} KB  ({_r(total_kb/1024)} MB)[/]"
-    )
     show_df(result_df)
+    console.print(f"[dim]Total: {_r(total_kb)} KB  ({_r(total_kb/1024)} MB)[/]")
     return result_df
 
 
@@ -335,22 +332,21 @@ def inspect_duplicates(
 
 # ─── 7 · Numeric Stats ────────────────────────────────────────────────────────
 
-def inspect_numeric_stats(df: pd.DataFrame) -> pd.DataFrame:
+def inspect_numeric_stats(
+    df: pd.DataFrame,
+    columns: list[str] | None = None,
+    title: str = "numeric stats",
+) -> pd.DataFrame:
     """
     Deskriptive Statistik für numerische Spalten.
 
-    Spalten: column, missing_pct, count, mean, median, mean_median_diff,
-             std, min, 25%, 75%, max, skewness
-
-    mean_median_diff ist ein Outlier-Indikator: ein großer Wert deutet auf
-    Ausreißer oder schiefe Verteilung hin.
-
-    Returns:
-        DataFrame mit deskriptiven Statistiken (alle auf _D Stellen gerundet).
+    Args:
+        columns: Optionale Spaltenliste — None → alle numerischen Spalten.
+        title:   Alternativer Section-Header (z.B. "numeric stats – fare columns").
     """
-    num_df = df.select_dtypes(include="number")
+    num_df = df[columns].select_dtypes(include="number") if columns else df.select_dtypes(include="number")
 
-    section_header("numeric stats")
+    section_header(title)
 
     if num_df.empty:
         warn("No numeric columns found.")
@@ -373,17 +369,21 @@ def inspect_numeric_stats(df: pd.DataFrame) -> pd.DataFrame:
 
 # ─── 8 · Categorical Stats ────────────────────────────────────────────────────
 
-def inspect_categorical_stats(df: pd.DataFrame) -> pd.DataFrame:
+def inspect_categorical_stats(
+    df: pd.DataFrame,
+    columns: list[str] | None = None,
+    title: str = "categorical stats",
+) -> pd.DataFrame:
     """
     Häufigkeitsanalyse für kategorische Spalten.
 
-    Returns:
-        DataFrame mit: column, missing_pct, missing_cnt, uniques,
-                       top_value, top_value_cnt, top_value_freq_pct
+    Args:
+        columns: Optionale Spaltenliste — None → alle kategorischen Spalten.
+        title:   Alternativer Section-Header.
     """
-    cat_df = df.select_dtypes(include=["object", "category", "bool", "string"])
+    cat_df = df[columns].select_dtypes(include=["object", "category", "bool", "string"]) if columns else df.select_dtypes(include=["object", "category", "bool", "string"])
 
-    section_header("categorical stats")
+    section_header(title)
 
     if cat_df.empty:
         warn("No categorical columns found.")
