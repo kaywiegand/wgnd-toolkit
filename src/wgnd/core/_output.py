@@ -28,15 +28,21 @@ from rich.table import Table
 
 from wgnd.core.config import cfg
 
-# ── Öffentliche Console-Instanz ───────────────────────────────────────────
-# Kann von Nutzern importiert werden für eigene rich-Ausgaben:
-#   from wgnd.core._output import console
-#   console.print("[bold]Mein Text[/]")
+# ── Öffentliche Console-Instanz (für info_box und eigene Rich-Ausgaben) ───
 console = Console()
-_stdout_console = Console(force_terminal=True, highlight=False)  # compact in Jupyter
 
-# ── Interner Logger (nur für Warnungen/Fehler im Code) ────────────────────
+# ── Interner Logger ───────────────────────────────────────────────────────
 _log = logging.getLogger("wgnd")
+
+
+def _c(hex_color: str) -> str:
+    """Hex-Farbe → ANSI true-color escape (Vordergrund)."""
+    h = hex_color.lstrip("#")
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    return f"\033[38;2;{r};{g};{b}m"
+
+_RESET = "\033[0m"
+_BOLD  = "\033[1m"
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -44,19 +50,9 @@ _log = logging.getLogger("wgnd")
 # ═════════════════════════════════════════════════════════════════════════════
 
 def section_header(title: str) -> None:
-    """
-    Druckt eine teal-farbige Trennlinie mit Titel.
-
-    Beispiel-Ausgabe:
-        ───  DIMENSIONS  ───────────────────────────────────────────────
-
-    Args:
-        title: Abschnittstitel (wird in Großbuchstaben dargestellt).
-    """
+    """Druckt eine farbige Trennlinie mit Titel."""
     pad = max(0, cfg.HEADER_LINE_WIDTH - len(title))
-    console.print(
-        f"\n[bold {cfg.PRIMARY_COLOR}]{'─' * 3}  {title.upper()}  {'─' * pad}[/]"
-    )
+    print(f"\n{_BOLD}{_c(cfg.PRIMARY_COLOR)}{'─' * 3}  {title.upper()}  {'─' * pad}{_RESET}")
 
 
 def info_box(data: dict[str, Any], title: str = "") -> None:
@@ -117,7 +113,7 @@ def show_df(
         highlight_style:     CSS-Style-String. Standard: rote Schrift.
     """
     if caption:
-        console.print(f"[{cfg.DIM_COLOR}]{caption}[/]")
+        print(f"{_c(cfg.DIM_COLOR)}{caption}{_RESET}")
 
     try:
         from IPython.display import display as ipy_display  # type: ignore
@@ -196,28 +192,28 @@ def show_df(
         ipy_display(styler)
 
     except ImportError:
-        console.print(df.to_string(index=False, max_rows=cfg.MAX_DISPLAY_ROWS))
+        print(df.to_string(index=False, max_rows=cfg.MAX_DISPLAY_ROWS))
 
 
 def warn(msg: str) -> None:
     """Zeigt eine gelbe Warnmeldung."""
-    console.print(f"[{cfg.WARN_COLOR}]⚠  {msg}[/]")
+    print(f"{_c(cfg.WARN_COLOR)}⚠  {msg}{_RESET}")
     _log.warning(msg)
 
 
 def error(msg: str) -> None:
     """Zeigt eine rote Fehlermeldung."""
-    console.print(f"[bold {cfg.ERROR_COLOR}]✗  {msg}[/]")
+    print(f"{_BOLD}{_c(cfg.ERROR_COLOR)}✗  {msg}{_RESET}")
     _log.error(msg)
 
 
 def success(msg: str) -> None:
     """Zeigt eine grüne Erfolgsmeldung."""
-    console.print(f"[{cfg.PRIMARY_COLOR}]✓  {msg}[/]")
+    print(f"{_c(cfg.PRIMARY_COLOR)}✓  {msg}{_RESET}")
 
 
 def log(msg: str, symbol: str | None = None, color: str | None = None) -> None:
-    """Neutrale Ausgabe im Stil der Inspect-Headlines. Symbol und Farbe optional."""
+    """Neutrale Ausgabe. Symbol und Farbe optional."""
     prefix = f"{symbol}  " if symbol else ""
     clr    = color or cfg.PRIMARY_COLOR
-    _stdout_console.print(f"[{clr}]{prefix}{msg}[/]")
+    print(f"{_c(clr)}{prefix}{msg}{_RESET}")
