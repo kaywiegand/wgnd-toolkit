@@ -125,12 +125,11 @@ def show_df(
 
         # Spalten-Typen klassifizieren
         float_cols = df.select_dtypes(include="float").columns.tolist()
-        int_cols   = df.select_dtypes(include="integer").columns.tolist()
-        num_cols   = float_cols + int_cols
+        num_cols   = df.select_dtypes(include="number").columns.tolist()
 
         # Prozent-Spalten: Name enthält 'pct' oder endet auf '_%'
-        pct_cols   = [c for c in float_cols
-                      if "pct" in str(c).lower() or str(c).endswith("_%")]
+        pct_cols    = [c for c in float_cols
+                       if "pct" in str(c).lower() or str(c).endswith("_%")]
         other_float = [c for c in float_cols if c not in pct_cols]
 
         # Formatierung: pct → 2 Stellen + %, rest → DECIMAL_PLACES Stellen
@@ -143,7 +142,6 @@ def show_df(
         styler = (
             df.style
             .format(fmt)
-            .set_properties(subset=num_cols, **{"text-align": "right"})
             .set_table_styles([
             # ── Header ────────────────────────────────────────────────
             {"selector": "thead th", "props": [
@@ -160,7 +158,6 @@ def show_df(
                 ("font-size",  "12px"),
                 ("padding",    "3px 14px 3px 0"),
                 ("color",      cfg.TABLE_TEXT),
-                ("text-align", "left"),
             ]},
             # ── Gerade Zeilen ─────────────────────────────────────────
             {"selector": "tr:nth-child(even) td", "props": [
@@ -176,6 +173,14 @@ def show_df(
             ]},
         ])
         )
+        if num_cols:
+            styler = styler.apply(
+                lambda col: [
+                    "text-align: right" if col.name in num_cols else "text-align: left"
+                    for _ in col
+                ],
+                axis=0,
+            )
         if not show_index:
             styler = styler.hide(axis="index")
 
