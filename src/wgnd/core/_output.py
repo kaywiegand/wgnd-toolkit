@@ -96,7 +96,7 @@ def show_df(
     highlight_col: str | None = None,
     highlight_threshold: float = 0.0,
     highlight_style: str | None = None,
-    show_index: bool = False,
+    show_index: bool = True,
 ) -> None:
     """
     Zeigt einen DataFrame an – mit HTML-Styling in Jupyter, Plaintext sonst.
