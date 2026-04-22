@@ -614,6 +614,7 @@ def inspect_outlier_detail(
     df: pd.DataFrame,
     col: str,
     hue: str | None = None,
+    figsize: tuple | None = None,
 ) -> None:
     """
     Boxplot + Histogramm mit IQR-Linien für eine einzelne Spalte.
@@ -645,7 +646,7 @@ def inspect_outlier_detail(
 
     style = mpl_style()
     fig, (ax_box, ax_hist) = plt.subplots(
-        2, 1, sharex=True, figsize=cfg.MPL_FIGSIZE,
+        2, 1, sharex=True, figsize=figsize or cfg.MPL_FIGSIZE,
         gridspec_kw={"height_ratios": [1, 2.5]},
     )
 
