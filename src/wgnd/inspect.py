@@ -615,7 +615,6 @@ def inspect_outlier_detail(
     col: str,
     hue: str | None = None,
     figsize: tuple | None = None,
-    axes: tuple | None = None,
 ) -> None:
     """
     Boxplot + Histogramm mit IQR-Linien für eine einzelne Spalte.
@@ -624,18 +623,12 @@ def inspect_outlier_detail(
     Boxplot und Histogramm teilen die x-Achse.
 
     Args:
-        df:      Eingabe-DataFrame.
-        col:     Numerische Spalte.
-        hue:     Optionale Gruppierungsspalte für Histogramm.
-        figsize: Eigene Figurengröße — überschreibt cfg.MPL_FIGSIZE.
-        axes:    Tuple (ax_box, ax_hist) — eigene Axes für Grid-Layouts.
-                 Wenn übergeben, wird kein plt.show() aufgerufen.
+        df:  Eingabe-DataFrame.
+        col: Numerische Spalte.
+        hue: Optionale Gruppierungsspalte für Histogramm.
 
-    Beispiel (Grid):
-        fig, axs = plt.subplots(3, 2, figsize=(12, 10))
-        for i, feat in enumerate(['a', 'b', 'c']):
-            inspect_outlier_detail(df, feat, axes=(axs[i, 0], axs[i, 1]))
-        plt.show()
+    Beispiel:
+        inspect_outlier_detail(df, "annual_income", hue="is_churned")
     """
     import matplotlib.pyplot as plt
     import seaborn as sns
@@ -651,15 +644,11 @@ def inspect_outlier_detail(
     c15      = int(((s < l15) | (s > u15)).sum())
     c30      = int(((s < l30) | (s > u30)).sum())
 
-    style      = mpl_style()
-    _own_fig   = axes is None
-    if _own_fig:
-        fig, (ax_box, ax_hist) = plt.subplots(
-            2, 1, sharex=True, figsize=figsize or cfg.MPL_FIGSIZE,
-            gridspec_kw={"height_ratios": [1, 2.5]},
-        )
-    else:
-        ax_box, ax_hist = axes
+    style = mpl_style()
+    fig, (ax_box, ax_hist) = plt.subplots(
+        2, 1, sharex=True, figsize=figsize or cfg.MPL_FIGSIZE,
+        gridspec_kw={"height_ratios": [1, 2.5]},
+    )
 
     # Boxplot
     sns.boxplot(
@@ -707,9 +696,8 @@ def inspect_outlier_detail(
     for ax in (ax_box, ax_hist):
         ax.spines[["top", "right"]].set_visible(False)
         ax.spines[["left", "bottom"]].set_color(cfg.CHART_AXIS)
-    if _own_fig:
-        plt.tight_layout()
-        plt.show()
+    plt.tight_layout()
+    plt.show()
 
 
 def iqr_values(df: pd.DataFrame, col: str) -> dict:
