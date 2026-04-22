@@ -25,7 +25,7 @@ import warnings
 import numpy as np
 import pandas as pd
 
-from wgnd.core._output import console, section_header, show_df, warn
+from wgnd.core._output import console, section_header, show_df, warn, success, error, log as _log
 from wgnd.core.config import cfg
 
 # Runden: zentral aus config
@@ -86,7 +86,7 @@ def inspect(
                 kwargs["title"] = title
             fn(df, **kwargs)
         except Exception as exc:
-            console.print(f"[{cfg.ERROR_COLOR}]✗  Error in '{name}': {exc}[/]")
+            error(f"Error in '{name}': {exc}")
     return None
 
 
@@ -154,7 +154,7 @@ def inspect_memory(df: pd.DataFrame) -> pd.DataFrame:
 
     section_header("memory")
     show_df(result_df)
-    console.print(f"[dim]Total: {_r(total_kb)} KB  ({_r(total_kb/1024)} MB)[/]")
+    _log(f"Total: {_r(total_kb)} KB  ({_r(total_kb/1024)} MB)")
     return result_df
 
 
@@ -213,11 +213,11 @@ def inspect_names(df: pd.DataFrame) -> pd.DataFrame:
 
     section_header("column names")
     if issues.empty:
-        console.print(f"[{cfg.PRIMARY_COLOR}]✓  All column names are Python-compatible.[/]")
+        success("All column names are Python-compatible.")
     else:
         warn(f"{len(issues)} column(s) with naming issues:")
         show_df(issues)
-    console.print(f"[dim]All {len(df.columns)}: {', '.join(df.columns.tolist())}[/]")
+    _log(f"All {len(df.columns)}: {', '.join(df.columns.tolist())}")
     return result_df
 
 
@@ -248,7 +248,7 @@ def inspect_missing(
     section_header("missing values")
 
     if cols_w.empty:
-        console.print(f"[{cfg.PRIMARY_COLOR}]✓  No missing values.[/]")
+        success("No missing values.")
         return pd.DataFrame(columns=["column", "missing_cnt", "missing_pct"])
 
     result_df = (
@@ -333,11 +333,9 @@ def inspect_duplicates(
     show_df(result_meta)
 
     if count == 0:
-        console.print(f"[{cfg.PRIMARY_COLOR}]✓  No duplicates found.[/]")
+        success("No duplicates found.")
     else:
-        console.print(
-            f"[dim]Duplicate mask returned — use [bold]result.head(10)[/bold] to inspect.[/]"
-        )
+        _log("Duplicate rows returned — use result.head(10) to inspect.")
 
     return dupes_df
 
@@ -608,9 +606,7 @@ def inspect_outliers(
         .reset_index(drop=True)
     )
     show_df(result_df, highlight_col="outliers_1.5x", highlight_threshold=0)
-    console.print(
-        f"[dim]→ inspect_outlier_detail(df, col) for boxplot+histogram per feature.[/]"
-    )
+    _log("→ inspect_outlier_detail(df, col) for boxplot+histogram per feature.")
     return result_df
 
 
