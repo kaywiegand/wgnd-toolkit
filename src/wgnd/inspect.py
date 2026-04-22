@@ -315,8 +315,8 @@ def inspect_duplicates(
         Leer wenn keine Duplikate vorhanden.
         Tipp: result.head(10) für Vorschau.
     """
-    dupes_df = df[df.duplicated(subset=subset, keep=False)].copy()
-    count    = df.duplicated(subset=subset).sum()
+    dupes_df = df[df.duplicated(subset=subset, keep="first")].copy()
+    count    = len(dupes_df)
     rows     = len(df)
 
     def _pct(n):
