@@ -126,9 +126,6 @@ class WgndConfig:
             ax.add_patch(mpatches.Rectangle((i, 0), 1, 1, color=color))
             ax.text(i + 0.5, -0.25, str(i), ha="center", va="top",
                     fontsize=9, color="#444444")
-            ax.text(i + 0.5, 0.5, color, ha="center", va="center",
-                    fontsize=6.5, color="white" if _is_dark(color) else "#333333",
-                    rotation=90)
 
         ax.set_xlim(0, n)
         ax.set_ylim(-0.4, 1)
