@@ -653,7 +653,7 @@ def inspect_outlier_detail(
     # Boxplot
     sns.boxplot(
         x=s, ax=ax_box,
-        color=cfg.PALETTE_BLUE_RANGE[4],
+        color=cfg.ACTIVE_PALETTE[0],
         flierprops={"markerfacecolor": cfg.COLOR_NEGATIVE,
                     "markeredgecolor": cfg.COLOR_NEGATIVE,
                     "markersize": 4, "alpha": 0.6},
