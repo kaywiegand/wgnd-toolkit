@@ -81,7 +81,7 @@ class WgndConfig:
     def __init__(self) -> None:
         self.ACTIVE_PALETTE: list[str] = self.PALETTE_STANDARD
 
-    def use_palette(self, name: str, n: int = 8) -> None:
+    def use_palette(self, name: str, n: int = 8, show: bool = False) -> None:
         """
         Aktive Palette wechseln.
 
@@ -91,8 +91,7 @@ class WgndConfig:
 
         Beispiel:
             cfg.use_palette("ocean")
-            cfg.use_palette("deep")
-            cfg.use_palette("viridis", n=6)
+            cfg.use_palette("viridis", n=6, show=True)
         """
         registry = {
             "ocean":      self.PALETTE_OCEAN,
@@ -111,6 +110,38 @@ class WgndConfig:
                     f"Unbekannte Palette: '{name}'. "
                     f"Eigene: {list(registry)} — oder beliebiger Seaborn-Name."
                 )
+        if show:
+            self.show_palette()
+
+    def show_palette(self) -> None:
+        """Zeigt die aktive Palette als horizontalen Farbstreifen mit Index."""
+        import matplotlib.pyplot as plt
+        import matplotlib.patches as mpatches
+
+        colors = self.ACTIVE_PALETTE
+        n = len(colors)
+        fig, ax = plt.subplots(figsize=(n * 0.9, 0.8))
+
+        for i, color in enumerate(colors):
+            ax.add_patch(mpatches.Rectangle((i, 0), 1, 1, color=color))
+            ax.text(i + 0.5, -0.25, str(i), ha="center", va="top",
+                    fontsize=9, color="#444444")
+            ax.text(i + 0.5, 0.5, color, ha="center", va="center",
+                    fontsize=6.5, color="white" if _is_dark(color) else "#333333",
+                    rotation=90)
+
+        ax.set_xlim(0, n)
+        ax.set_ylim(-0.4, 1)
+        ax.axis("off")
+        plt.tight_layout()
+        plt.show()
+
+
+def _is_dark(hex_color: str) -> bool:
+    """Gibt True zurück wenn die Farbe dunkel ist (für weiße Beschriftung)."""
+    h = hex_color.lstrip("#")
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    return (0.299 * r + 0.587 * g + 0.114 * b) < 140
 
     # ── Chart-Stil ────────────────────────────────────────────────────────
     CHART_BG:        str = "#ffffff"
