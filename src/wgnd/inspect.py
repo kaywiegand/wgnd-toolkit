@@ -677,12 +677,12 @@ def inspect_outlier_detail(
 
     # IQR-Linien auf beiden Achsen
     vlines = [
-        (mean,  cfg.COLOR_SIGNAL,   "-",  1.8, f"Mean: {_r(mean)}"),
-        (median, cfg.ACTIVE_PALETTE[2], "-", 1.8, f"Median: {_r(median)}"),
-        (l15,   cfg.COLOR_SIGNAL,   ":",  1.2, f"1.5× IQR lower"),
-        (u15,   cfg.COLOR_SIGNAL,   ":",  1.2, f"1.5× IQR upper  ({c15} outliers)"),
-        (l30,   cfg.COLOR_NEGATIVE, ":",  1.2, f"3× IQR lower"),
-        (u30,   cfg.COLOR_NEGATIVE, ":",  1.2, f"3× IQR upper  ({c30} outliers)"),
+        (mean,   cfg.ANNO_MEAN,     "-",  1.8, f"Mean: {_r(mean)}"),
+        (median, cfg.ANNO_MEDIAN,   "-",  1.8, f"Median: {_r(median)}"),
+        (l15,    cfg.ANNO_IQR_SOFT, ":",  1.2, f"1.5× IQR lower"),
+        (u15,    cfg.ANNO_IQR_SOFT, ":",  1.2, f"1.5× IQR upper  ({c15} outliers)"),
+        (l30,    cfg.ANNO_IQR_HARD, ":",  1.2, f"3× IQR lower"),
+        (u30,    cfg.ANNO_IQR_HARD, ":",  1.2, f"3× IQR upper  ({c30} outliers)"),
     ]
     for ax in (ax_box, ax_hist):
         for x, color, ls, lw, label in vlines:

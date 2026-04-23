@@ -33,11 +33,19 @@ class WgndConfig:
     DIM_COLOR:     str = "#6b6b6b"   # Sekundärtext
 
     # ── Signal-Farben ─────────────────────────────────────────────────────
-    # Sparsam einsetzen — nur wenn die Semantik stimmt.
-    COLOR_SIGNAL:   str = "#ffa600"   # Amber  → Mittelwert, Trendlinie, Schwellwert
+    COLOR_SIGNAL:   str = "#ffa600"   # Amber  → Schwellwert, Trendlinie
     COLOR_POSITIVE: str = "#488f31"   # Grün   → explizit positiv
     COLOR_NEGATIVE: str = "#de425b"   # Rot    → explizit negativ / Risiko
     COLOR_NEUTRAL:  str = "#8c8c8c"   # Grau   → neutrale Referenzlinie
+
+    # ── Annotation-Farben — fix, palette-unabhängig ───────────────────────
+    # Für Linien/Marker in Charts: Mean, Median, IQR-Bounds, Referenz.
+    # Wechseln der ACTIVE_PALETTE hat keinen Einfluss darauf.
+    ANNO_MEAN:     str = "#ffa600"   # Amber  → Mittelwert-Linie
+    ANNO_MEDIAN:   str = "#004c6d"   # Dunkelblau → Median-Linie
+    ANNO_IQR_SOFT: str = "#ffa600"   # Amber  → 1.5× IQR Bounds
+    ANNO_IQR_HARD: str = "#de425b"   # Rot    → 3× IQR Bounds
+    ANNO_REF:      str = "#8c8c8c"   # Grau   → neutrale Referenzlinie
 
     # ── Paletten ──────────────────────────────────────────────────────────
     # Alle Paletten stehen zur Auswahl — aktive Palette: cfg.ACTIVE_PALETTE
@@ -110,8 +118,22 @@ class WgndConfig:
                     f"Unbekannte Palette: '{name}'. "
                     f"Eigene: {list(registry)} — oder beliebiger Seaborn-Name."
                 )
+        self._propagate_palette()
         if show:
             self.show_palette()
+
+    def _propagate_palette(self) -> None:
+        """Überträgt ACTIVE_PALETTE sofort auf matplotlib und seaborn."""
+        try:
+            import matplotlib as mpl
+            mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=self.ACTIVE_PALETTE)
+        except Exception:
+            pass
+        try:
+            import seaborn as sns
+            sns.set_palette(self.ACTIVE_PALETTE)
+        except Exception:
+            pass
 
     def show_palette(self) -> None:
         """Zeigt die aktive Palette als horizontalen Farbstreifen mit Index."""
