@@ -76,22 +76,41 @@ class WgndConfig:
     ]
 
     # ── Standard-Palette — hier wechseln um den Default zu ändern ────────
-    PALETTE_STANDARD = PALETTE_OCEAN
+    PALETTE_STANDARD = PALETTE_BLUE_RANGE
 
     def __init__(self) -> None:
         self.ACTIVE_PALETTE: list[str] = self.PALETTE_STANDARD
 
-    def use_palette(self, name: str) -> None:
-        """Aktive Palette wechseln. Verfügbar: 'ocean', 'pink_teal', 'blue_range', 'blue_light'"""
+    def use_palette(self, name: str, n: int = 8) -> None:
+        """
+        Aktive Palette wechseln.
+
+        Eigene Paletten: 'ocean', 'pink_teal', 'blue_range', 'blue_light'
+        Seaborn-Paletten: 'deep', 'muted', 'pastel', 'viridis', 'rocket', ...
+            → beliebiger Seaborn-Name, n = Anzahl Farben
+
+        Beispiel:
+            cfg.use_palette("ocean")
+            cfg.use_palette("deep")
+            cfg.use_palette("viridis", n=6)
+        """
         registry = {
             "ocean":      self.PALETTE_OCEAN,
             "pink_teal":  self.PALETTE_PINK_TEAL,
             "blue_range": self.PALETTE_BLUE_RANGE,
             "blue_light": self.PALETTE_BLUE_LIGHT,
         }
-        if name not in registry:
-            raise ValueError(f"Unbekannte Palette: '{name}'. Verfügbar: {list(registry)}")
-        self.ACTIVE_PALETTE = registry[name]
+        if name in registry:
+            self.ACTIVE_PALETTE = registry[name]
+        else:
+            import seaborn as sns
+            try:
+                self.ACTIVE_PALETTE = sns.color_palette(name, n).as_hex()
+            except Exception:
+                raise ValueError(
+                    f"Unbekannte Palette: '{name}'. "
+                    f"Eigene: {list(registry)} — oder beliebiger Seaborn-Name."
+                )
 
     # ── Chart-Stil ────────────────────────────────────────────────────────
     CHART_BG:        str = "#ffffff"
