@@ -134,25 +134,19 @@ class WgndConfig:
         plt.show()
 
 
-def _is_dark(hex_color: str) -> bool:
-    """Gibt True zurück wenn die Farbe dunkel ist (für weiße Beschriftung)."""
-    h = hex_color.lstrip("#")
-    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
-    return (0.299 * r + 0.587 * g + 0.114 * b) < 140
-
     # ── Chart-Stil ────────────────────────────────────────────────────────
     CHART_BG:        str = "#ffffff"
-    CHART_GRID:      str = "#e8e8e8"   # dezentes Hellgrau
-    CHART_AXIS:      str = "#b0b0b0"   # Achsenlinien, etwas dunkler
-    CHART_AXIS_TEXT: str = "#6b6b6b"   # Tick-Labels
-    CHART_TITLE:     str = "#222222"   # fast schwarz
-    CHART_LABEL:     str = "#444444"   # Achsen-Titel
+    CHART_GRID:      str = "#e8e8e8"
+    CHART_AXIS:      str = "#b0b0b0"
+    CHART_AXIS_TEXT: str = "#6b6b6b"
+    CHART_TITLE:     str = "#222222"
+    CHART_LABEL:     str = "#444444"
 
     # ── Tabellen ──────────────────────────────────────────────────────────
     TABLE_ROW_ODD:   str = "#ffffff"
     TABLE_ROW_EVEN:  str = "#f5f5f5"
     TABLE_HEADER_BG: str = "#e0e0e0"
-    TABLE_TEXT:      str = "#000000"   # immer schwarz
+    TABLE_TEXT:      str = "#000000"
 
     # ── rich Panel ────────────────────────────────────────────────────────
     PANEL_PADDING:     tuple[int, int] = (0, 1)
@@ -166,3 +160,9 @@ def _is_dark(hex_color: str) -> bool:
 
 
 cfg = WgndConfig()
+
+
+def _is_dark(hex_color: str) -> bool:
+    h = hex_color.lstrip("#")
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    return (0.299 * r + 0.587 * g + 0.114 * b) < 140
