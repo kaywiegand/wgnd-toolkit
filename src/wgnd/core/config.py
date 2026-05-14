@@ -85,6 +85,28 @@ class WgndConfig:
     def __init__(self) -> None:
         self.ACTIVE_PALETTE: list[str] = self.PALETTE_STANDARD
 
+    def palette_n(self, n: int) -> list[str]:
+        """Pick n evenly-spaced colors from PALETTE_CATEGORICAL.
+
+        Immer gleichmäßig über die Palette verteilt — kein hardcoding von Indices.
+        n=2 gibt PALETTE_DUAL zurück (garantierter Max-Kontrast).
+
+        Beispiele:
+            colors = cfg.palette_n(3)   # 3 Farben, gleichmäßig verteilt
+            colors = cfg.palette_n(2)   # DUAL: [dunkel-lila, gelb-grün]
+        """
+        if n <= 0:
+            return []
+        if n == 1:
+            return [self.PALETTE_CATEGORICAL[0]]
+        if n == 2:
+            return self.PALETTE_DUAL
+        palette = self.PALETTE_CATEGORICAL
+        if n >= len(palette):
+            return palette
+        indices = [round(i * len(palette) / n) for i in range(n)]
+        return [palette[i] for i in indices]
+
     def use_palette(self, name: str, n: int = 10, show: bool = False) -> None:
         """
         Aktive Palette wechseln.
