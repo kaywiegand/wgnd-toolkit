@@ -50,6 +50,21 @@
 - `inspect_duplicates` gibt nur zu löschende Zeilen zurück (`keep="first"`)
 - `_is_dark()` Hilfsfunktion für Lesbarkeit auf dunklen Farbflächen
 
+### 2026-05-14 — Palette-System überarbeitet
+
+**Konzept:** Paletten nach Rolle statt nach Aussehen benannt.
+
+**Neu:**
+- `PALETTE_CATEGORICAL` — 10 Farben aus viridis + PRGn Familie (Option A)
+- `PALETTE_DUAL` — 2 Farben mit max. Kontrast für binäre Vergleiche
+- `PALETTE_SEQ = "viridis"` — Colormap-Name für Heatmaps / Intensität
+- `PALETTE_DIV = "PRGn"` — Colormap-Name für Abweichungen vom Nullpunkt
+- `show_palettes()` in viz.py zeigt neues System
+
+**Entfernt:** `PALETTE_OCEAN`, `PALETTE_PINK_TEAL`, `PALETTE_BLUE_RANGE`, `PALETTE_BLUE_LIGHT`, `PALETTE_DIVERGENT`
+
+**Warum:** Sequential-Palette war fälschlicherweise als Default gesetzt → ähnliche Blautöne in kategorischen Charts kaum unterscheidbar.
+
 ### 2026-05-11 — Dokumentation angelegt
 
 - `CLAUDE.md`, `ROADMAP.md`, `PROCESS_LOG.md` erstellt

@@ -1,111 +1,105 @@
 """
-core/config.py  (theme_config)
-------------------------------
+core/config.py
+--------------
 Einzige Stelle um den Look von wgnd anzupassen.
 
 Struktur:
   Zahlen & Formate   DECIMAL_PLACES, MPL_FIGSIZE, ...
   Farb-Rollen        COLOR_SIGNAL, COLOR_POSITIVE, COLOR_NEGATIVE, COLOR_NEUTRAL
-  Paletten           PALETTE_*  (kategorisch, sequential, divergent)
+  Paletten           PALETTE_CATEGORICAL, PALETTE_DUAL, PALETTE_SEQ, PALETTE_DIV
   Chart-Basis        CHART_BG, CHART_GRID, CHART_AXIS, ...
   Tabellen           TABLE_*
   Analyse            CORR_HIGH_THRESHOLD, IQR_MULTIPLIER
 
+Paletten-Konzept:
+  CATEGORICAL  → mehrere Kategorien unterscheiden (10 Farben, viridis+PRGn Familie)
+  DUAL         → exakt 2 Kategorien (max. Kontrast)
+  SEQ          → Intensität / Magnitude als Colormap-Name → cfg.PALETTE_SEQ
+  DIV          → Abweichung von Nullpunkt als Colormap-Name → cfg.PALETTE_DIV
+
 Verwendung:
     from wgnd.core.config import cfg
-    cfg.COLOR_SIGNAL
-    cfg.PALETTE_CATEGORICAL
-    cfg.DECIMAL_PLACES
+    cfg.PALETTE_CATEGORICAL       # Liste von 10 Hex-Farben
+    cfg.PALETTE_DUAL              # [dunkel-lila, gelb-grün]
+    cfg.PALETTE_SEQ               # "viridis"  → sns.color_palette(cfg.PALETTE_SEQ)
+    cfg.PALETTE_DIV               # "PRGn"     → sns.color_palette(cfg.PALETTE_DIV)
+    cfg.COLOR_SIGNAL              # Amber
+    cfg.ACTIVE_PALETTE            # aktuell gesetzte Palette (default: CATEGORICAL)
 """
 
 
 class WgndConfig:
 
     # ── Zahlen & Formate ──────────────────────────────────────────────────
-    DECIMAL_PLACES:   int   = 3      # Nachkommastellen überall im Package
-    MPL_FIGSIZE: tuple[int,int] = (12, 6)
-    MPL_DPI:     int   = 120
+    DECIMAL_PLACES:   int         = 2
+    MPL_FIGSIZE: tuple[int, int]  = (12, 6)
+    MPL_DPI:     int              = 120
 
     # ── UI / rich-Output ──────────────────────────────────────────────────
-    PRIMARY_COLOR: str = "#004c6d"   # Header, Panels
+    PRIMARY_COLOR: str = "#34618d"   # Header, Panels
     WARN_COLOR:    str = "#ffa600"   # Package-Warnungen
     ERROR_COLOR:   str = "#de425b"   # Fehler, kritische Werte
     DIM_COLOR:     str = "#6b6b6b"   # Sekundärtext
 
     # ── Signal-Farben ─────────────────────────────────────────────────────
     COLOR_SIGNAL:   str = "#ffa600"   # Amber  → Schwellwert, Trendlinie
-    COLOR_POSITIVE: str = "#488f31"   # Grün   → explizit positiv
-    COLOR_NEGATIVE: str = "#de425b"   # Rot    → explizit negativ / Risiko
+    COLOR_POSITIVE: str = "#25ac82"   # Teal-Grün  → positiv (aus CATEGORICAL [6])
+    COLOR_NEGATIVE: str = "#de425b"   # Rot    → negativ / Risiko
     COLOR_NEUTRAL:  str = "#8c8c8c"   # Grau   → neutrale Referenzlinie
 
     # ── Annotation-Farben — fix, palette-unabhängig ───────────────────────
-    # Für Linien/Marker in Charts: Mean, Median, IQR-Bounds, Referenz.
-    # Wechseln der ACTIVE_PALETTE hat keinen Einfluss darauf.
     ANNO_MEAN:     str = "#ffa600"   # Amber  → Mittelwert-Linie
-    ANNO_MEDIAN:   str = "#004c6d"   # Dunkelblau → Median-Linie
+    ANNO_MEDIAN:   str = "#34618d"   # Blau   → Median-Linie
     ANNO_IQR_SOFT: str = "#ffa600"   # Amber  → 1.5× IQR Bounds
     ANNO_IQR_HARD: str = "#de425b"   # Rot    → 3× IQR Bounds
     ANNO_REF:      str = "#8c8c8c"   # Grau   → neutrale Referenzlinie
 
     # ── Paletten ──────────────────────────────────────────────────────────
-    # Alle Paletten stehen zur Auswahl — aktive Palette: cfg.ACTIVE_PALETTE
-    # Wechseln mit: cfg.use_palette("ocean") oder cfg.use_palette("pink_teal")
-
-    PALETTE_OCEAN: list[str] = [        # Standard — Blau → Orange (learnui.design)
-        "#003d5c",   # Deep Blue
-        "#31497e",   # Indigo
-        "#674f95",   # Purple
-        "#a14e9a",   # Violet
-        "#d44c8d",   # Pink
-        "#f9596f",   # Coral
-        "#ff7a47",   # Orange
+    # Categorical: 10 Farben aus viridis + PRGn Familie — perceptually distinct
+    PALETTE_CATEGORICAL: list[str] = [
+        "#481c6e",   # [0] dunkel lila  (viridis)
+        "#894f98",   # [1] lila         (PRGn)
+        "#34618d",   # [2] blau         (viridis)
+        "#c4a8d0",   # [3] hell lila    (PRGn)
+        "#24878e",   # [4] teal         (viridis)
+        "#a9dca3",   # [5] hell grün    (PRGn)
+        "#25ac82",   # [6] grün-teal    (viridis)
+        "#3c954d",   # [7] dunkel grün  (PRGn)
+        "#98d83e",   # [8] gelb-grün    (viridis)
+        "#146b30",   # [9] sehr dunkel grün (PRGn)
     ]
 
-    PALETTE_PINK_TEAL: list[str] = [    # Pink → Teal
-        "#d44c8d", "#f9596f", "#ff7a47",
-        "#003d5c", "#00546e", "#006b71",
-        "#008162", "#009446", "#65a31c", "#b1aa00",
+    # Dual: 2 Farben mit maximalem Kontrast — für binäre Vergleiche
+    PALETTE_DUAL: list[str] = [
+        "#481c6e",   # dunkel lila  (CATEGORICAL[0])
+        "#98d83e",   # gelb-grün    (CATEGORICAL[8])
     ]
 
-    PALETTE_BLUE_RANGE: list[str] = [   # Sequential Blau dunkel→hell
-        "#004c6d", "#215d7e", "#366e8f", "#4a80a1",
-        "#5e93b3", "#71a5c6", "#84b9d9", "#98ccec", "#ace0ff",
-    ]
+    # Sequential + Diverging: Seaborn/Matplotlib Colormap-Namen
+    PALETTE_SEQ: str = "viridis"   # für Heatmaps, Intensität
+    PALETTE_DIV: str = "PRGn"      # für Abweichungen von Nullpunkt
 
-    PALETTE_BLUE_LIGHT: list[str] = [   # Sequential Blau hell
-        "#004c6d", "#125e7f", "#217192", "#3085a5", "#3e99b7",
-        "#4dadc9", "#5dc2dc", "#6dd7ed", "#7eedff",
-    ]
-
-    PALETTE_DIVERGENT: list[str] = [    # Divergent Grün↔Creme↔Rot
-        "#00876c", "#4b9a76", "#75ad83", "#9bc193", "#bed4a7",
-        "#e0e8be", "#fffcd7",
-        "#f5e2b1", "#efc68f", "#eaa872", "#e5885e", "#de6553", "#d43d51",
-    ]
-
-    # ── Standard-Palette — hier wechseln um den Default zu ändern ────────
-    PALETTE_STANDARD = PALETTE_BLUE_RANGE
+    # ── Standard-Palette ──────────────────────────────────────────────────
+    PALETTE_STANDARD = PALETTE_CATEGORICAL
 
     def __init__(self) -> None:
         self.ACTIVE_PALETTE: list[str] = self.PALETTE_STANDARD
 
-    def use_palette(self, name: str, n: int = 8, show: bool = False) -> None:
+    def use_palette(self, name: str, n: int = 10, show: bool = False) -> None:
         """
         Aktive Palette wechseln.
 
-        Eigene Paletten: 'ocean', 'pink_teal', 'blue_range', 'blue_light'
-        Seaborn-Paletten: 'deep', 'muted', 'pastel', 'viridis', 'rocket', ...
-            → beliebiger Seaborn-Name, n = Anzahl Farben
+        Eigene Paletten:    'categorical', 'dual'
+        Seaborn-Paletten:   beliebiger Seaborn-Name, n = Anzahl Farben
 
-        Beispiel:
-            cfg.use_palette("ocean")
-            cfg.use_palette("viridis", n=6, show=True)
+        Beispiele:
+            cfg.use_palette("categorical")
+            cfg.use_palette("tab10")
+            cfg.use_palette("viridis", n=8, show=True)
         """
         registry = {
-            "ocean":      self.PALETTE_OCEAN,
-            "pink_teal":  self.PALETTE_PINK_TEAL,
-            "blue_range": self.PALETTE_BLUE_RANGE,
-            "blue_light": self.PALETTE_BLUE_LIGHT,
+            "categorical": self.PALETTE_CATEGORICAL,
+            "dual":        self.PALETTE_DUAL,
         }
         if name in registry:
             self.ACTIVE_PALETTE = registry[name]
@@ -155,7 +149,6 @@ class WgndConfig:
         plt.tight_layout()
         plt.show()
 
-
     # ── Chart-Stil ────────────────────────────────────────────────────────
     CHART_BG:        str = "#ffffff"
     CHART_GRID:      str = "#e8e8e8"
@@ -172,8 +165,8 @@ class WgndConfig:
 
     # ── rich Panel ────────────────────────────────────────────────────────
     PANEL_PADDING:     tuple[int, int] = (0, 1)
-    HEADER_LINE_WIDTH: int = 55
-    MAX_DISPLAY_ROWS:  int = 20
+    HEADER_LINE_WIDTH: int             = 55
+    MAX_DISPLAY_ROWS:  int             = 20
 
     # ── Analyse ───────────────────────────────────────────────────────────
     CORR_HIGH_THRESHOLD: float = 0.8

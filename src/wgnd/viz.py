@@ -46,36 +46,38 @@ def show_palettes() -> None:
 
     Nützlich zum Nachschlagen im Notebook.
     """
+    import seaborn as sns
+
     palettes = {
-        "PALETTE_CATEGORICAL (kategorisch)": cfg.ACTIVE_PALETTE,
-        "PALETTE_BUSINESS (sequential)":     cfg.PALETTE_BUSINESS,
-        "PALETTE_DIVERGENT (divergent)":     cfg.PALETTE_DIVERGENT,
-        "Signals":                           [
+        f"CATEGORICAL  (mehrere Gruppen, {len(cfg.PALETTE_CATEGORICAL)} Farben)": cfg.PALETTE_CATEGORICAL,
+        f"DUAL         (binär, 2 Farben)":                                         cfg.PALETTE_DUAL,
+        f"SEQ          (sequential, Colormap: {cfg.PALETTE_SEQ})":                 sns.color_palette(cfg.PALETTE_SEQ, 10).as_hex(),
+        f"DIV          (divergent, Colormap: {cfg.PALETTE_DIV})":                  sns.color_palette(cfg.PALETTE_DIV, 11).as_hex(),
+        "Signals       (semantic, fix)":                                            [
             cfg.COLOR_SIGNAL,
             cfg.COLOR_POSITIVE,
             cfg.COLOR_NEGATIVE,
             cfg.COLOR_NEUTRAL,
         ],
     }
-    signal_labels = ["SIGNAL (Amber)", "POSITIVE (Grün)",
-                     "NEGATIVE (Rot)", "NEUTRAL (Grau)"]
+    signal_labels = ["SIGNAL (Amber)", "POSITIVE", "NEGATIVE (Rot)", "NEUTRAL (Grau)"]
 
     n_groups = len(palettes)
-    fig, axes = plt.subplots(n_groups, 1, figsize=(12, n_groups * 1.4))
+    fig, axes = plt.subplots(n_groups, 1, figsize=(14, n_groups * 1.4))
 
     for ax, (name, colors) in zip(axes, palettes.items()):
         labels = signal_labels if name.startswith("Signals") else colors
         for i, (color, label) in enumerate(zip(colors, labels)):
             ax.add_patch(plt.Rectangle((i, 0), 1, 1, color=color))
             ax.text(i + 0.5, 0.5, label, ha="center", va="center",
-                    fontsize=8, color="white" if _is_dark(color) else "#333",
+                    fontsize=7.5, color="white" if _is_dark(color) else "#333",
                     fontweight="bold")
         ax.set_xlim(0, len(colors))
         ax.set_ylim(0, 1)
         ax.set_yticks([])
         ax.set_xticks([])
         ax.spines[:].set_visible(False)
-        ax.set_ylabel(name, fontsize=10, rotation=0, ha="right",
+        ax.set_ylabel(name, fontsize=9, rotation=0, ha="right",
                       va="center", labelpad=8, color=cfg.CHART_LABEL)
 
     fig.suptitle("wgnd · Color Palettes", fontsize=14, color=cfg.CHART_TITLE,
