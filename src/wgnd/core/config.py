@@ -79,8 +79,8 @@ class WgndConfig:
     PALETTE_SEQ: str = "viridis"   # für Heatmaps, Intensität
     PALETTE_DIV: str = "PRGn"      # für Abweichungen von Nullpunkt
 
-    # Farblisten für LinearSegmentedColormap.from_list() und ähnliche APIs
-    # Konsistent mit PALETTE_DIV (PRGn-Familie) und PALETTE_CATEGORICAL
+    # Farbliste für LinearSegmentedColormap.from_list() — Korrelations-Heatmaps
+    # Konsistent mit PALETTE_DIV (PRGn-Familie)
     PALETTE_DIVERGENT: list[str] = [
         "#762a83",  # dunkel lila  (PRGn Extrem neg)
         "#9970ab",  # mittel lila
@@ -89,39 +89,6 @@ class WgndConfig:
         "#a6dba0",  # hell grün
         "#5aae61",  # mittel grün
         "#1b7837",  # dunkel grün (PRGn Extrem pos)
-    ]
-
-    PALETTE_BLUE_RANGE: list[str] = [
-        "#084594",  # dunkel blau (Sequential, Intensität hoch)
-        "#2171b5",
-        "#4292c6",
-        "#6baed6",
-        "#9ecae1",
-        "#c6dbef",
-        "#deebf7",  # hell blau  (Intensität niedrig)
-    ]
-
-    PALETTE_OCEAN: list[str] = [
-        "#1a3a5c",  # dunkel navy
-        "#2E86AB",  # blau
-        "#45b7d1",  # hell blau
-        "#96e6a1",  # hell grün
-        "#d4a843",  # amber
-        "#e07b39",  # orange
-        "#c0392b",  # rot
-    ]
-
-    PALETTE_PINK_TEAL: list[str] = [
-        "#c51b7d",  # dunkel pink
-        "#de77ae",
-        "#f1b6da",
-        "#fde0ef",
-        "#e6f5d0",
-        "#b8e186",
-        "#7fbc41",
-        "#4d9221",
-        "#25ac82",  # teal (aus CATEGORICAL)
-        "#276419",  # dunkel grün
     ]
 
     # ── Standard-Palette ──────────────────────────────────────────────────
