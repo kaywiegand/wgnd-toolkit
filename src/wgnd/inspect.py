@@ -447,7 +447,6 @@ def inspect_correlations(
     """
     import matplotlib.pyplot as plt
     import seaborn as sns
-    from matplotlib.colors import LinearSegmentedColormap
     from wgnd.core.theme import mpl_style
 
     num_df = df.select_dtypes(include="number")
@@ -491,14 +490,12 @@ def inspect_correlations(
     else:
         show_df(corr)
 
-    # ── Heatmap mit PALETTE_DIVERGENT ─────────────────────────────────────
+    # ── Heatmap ───────────────────────────────────────────────────────────
     style = mpl_style()
     n     = len(cols)
     fig, ax = plt.subplots(figsize=(max(8, n * 0.7), max(6, n * 0.6)))
 
-    cmap = LinearSegmentedColormap.from_list(
-        "wgnd_div", cfg.PALETTE_DIVERGENT, N=256
-    )
+    cmap = plt.get_cmap(cfg.PALETTE_DIV)
     mask = np.triu(np.ones_like(corr, dtype=bool))
     sns.heatmap(
         corr, mask=mask, annot=True, fmt=f".{_D}f",

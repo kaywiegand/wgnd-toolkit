@@ -79,18 +79,6 @@ class WgndConfig:
     PALETTE_SEQ: str = "viridis"   # für Heatmaps, Intensität
     PALETTE_DIV: str = "PRGn"      # für Abweichungen von Nullpunkt
 
-    # Farbliste für LinearSegmentedColormap.from_list() — Korrelations-Heatmaps
-    # Konsistent mit PALETTE_DIV (PRGn-Familie)
-    PALETTE_DIVERGENT: list[str] = [
-        "#762a83",  # dunkel lila  (PRGn Extrem neg)
-        "#9970ab",  # mittel lila
-        "#c2a5cf",  # hell lila
-        "#f7f7f7",  # Creme/Weiß  (Nullpunkt)
-        "#a6dba0",  # hell grün
-        "#5aae61",  # mittel grün
-        "#1b7837",  # dunkel grün (PRGn Extrem pos)
-    ]
-
     # ── Standard-Palette ──────────────────────────────────────────────────
     PALETTE_STANDARD = PALETTE_CATEGORICAL
 
