@@ -118,8 +118,10 @@ class TestInspectDuplicates:
         assert isinstance(result, pd.DataFrame)
 
     def test_detects_known_duplicate(self, sample_df):
+        # keep="first": das Original der Duplikat-Gruppe zaehlt nicht mit,
+        # nur die ueberzaehlige Kopie kommt zurueck (siehe PROCESS_LOG 2026-04-22/23)
         result = inspect_duplicates(sample_df)
-        assert len(result) >= 2
+        assert len(result) >= 1
 
     def test_clean_df_empty(self, clean_df):
         result = inspect_duplicates(clean_df)
@@ -180,13 +182,13 @@ class TestIqrValues:
 
 
 class TestInspectOrchestrator:
-    def test_returns_dict(self, sample_df):
+    def test_returns_none(self, sample_df):
+        # inspect() gibt laut README/Docstring bewusst None zurueck --
+        # die einzelnen inspect_*-Funktionen liefern DataFrame/dict, der
+        # Orchestrator selbst ist nur fuer die Ausgabe da.
         result = inspect(sample_df, sections=["dimensions", "dtypes"])
-        assert isinstance(result, dict)
-        assert "dimensions" in result
-        assert "dtypes" in result
+        assert result is None
 
     def test_unknown_section_no_crash(self, sample_df):
         result = inspect(sample_df, sections=["dimensions", "UNKNOWN"])
-        assert "dimensions" in result
-        assert "UNKNOWN" not in result
+        assert result is None

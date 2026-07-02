@@ -311,7 +311,8 @@ def inspect_duplicates(
     Duplizierte Zeilen analysieren.
 
     Returns:
-        DataFrame aller duplizierten Zeilen (keep=False).
+        DataFrame der überzähligen Duplikate (keep="first" — die jeweils erste
+        Zeile eines Duplikat-Clusters gilt als Original und wird nicht zurückgegeben).
         Leer wenn keine Duplikate vorhanden.
         Tipp: result.head(10) für Vorschau.
     """
