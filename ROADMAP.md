@@ -6,7 +6,7 @@
 
 | Phase | Beschreibung | Status |
 | :--- | :--- | :--- |
-| 0 | Core: config, theme, output, inspect, viz | ✅ Stabil |
+| 0 | Core: config, theme, output, inspect, viz, models (ModelTracker), notes (EdaNotes) | ✅ Stabil |
 | 1 | Polars-Support | 🟡 In Arbeit |
 | 2 | Backlog-Features | 📋 Geplant |
 

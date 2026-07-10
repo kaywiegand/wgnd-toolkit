@@ -107,7 +107,9 @@ wgnd-toolkit/
 │   │
 │   ├── inspect.py          ← EDA: inspect() + 9 Sub-Funktionen
 │   ├── viz.py              ← Charts (Matplotlib/Seaborn)
-│   └── __init__.py         ← Direkt-Exports: setup, cfg, inspect, success, warn, log, ...
+│   ├── models.py           ← ModelTracker + save_model (DSC, benötigt dsc-Extra)
+│   ├── notes.py            ← EdaNotes: kategorisierter EDA-Notiz-Sammler
+│   └── __init__.py         ← Direkt-Exports: setup, cfg, inspect, ModelTracker, EdaNotes, ...
 │
 ├── examples/
 │   ├── data/customers.csv
@@ -173,6 +175,37 @@ from wgnd.viz import time_series, heatmap, pairplot, boxplot, stacked_bar_pct
 
 fig, ax = bar(df, x="city", y="revenue", title="Revenue by City")
 fig, ax = scatter(df, x="trip_distance", y="fare_amount")
+```
+
+### `wgnd.models` — Modell-Tracking (DSC)
+
+Klassifikations-Tracking. Benötigt das `dsc`-Extra (`scikit-learn`, `joblib`);
+scikit-learn wird erst beim Loggen eines Runs importiert, der Basis-Import von
+`wgnd` bleibt ohne das Extra intakt.
+
+| API | Beschreibung |
+|---|---|
+| `ModelTracker(csv_path=..., export_threshold=0.30)` | Persistentes CSV-Log über Runs |
+| `.add_entry(name, model, feat_name, feat_list, y_true, y_pred, y_proba=None, description="")` | Loggt F1/Recall/Precision/ROC-AUC, exportiert Modell smart (neuer Bestwert **oder** F1 ≥ Schwelle), `Is_Best`-Flag |
+| `.get_results()` | Historie als DataFrame |
+| `save_model(model, name, folder=...)` | joblib-Export eines Modells |
+
+```python
+from wgnd import ModelTracker, save_model
+
+tracker = ModelTracker(csv_path="../data/04_models/model_results_tracking.csv")
+run_id = tracker.add_entry("logreg_v1", pipe, "base_feats", feats, y_val, y_pred, y_proba)
+tracker.get_results()
+```
+
+### `wgnd.notes` — EDA-Notizen
+
+```python
+from wgnd import EdaNotes, notes   # 'notes' ist eine importfertige Singleton-Instanz
+
+notes.add("CLEAN", "Duplikate in 'id' droppen")
+notes.add("FEATURE", "log-Transform auf 'price'")
+notes.show()                       # rendert eine kompakte HTML-Box im Notebook
 ```
 
 ---
