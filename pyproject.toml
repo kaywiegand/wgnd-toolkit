@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name        = "wgnd"
-version     = "0.2.0"
+version     = "0.3.0"
 description = "Wiegand Data Toolkit – EDA & Visualisierung für DAN & DSC Projekte"
 readme      = "README.md"
 requires-python = ">=3.10"
