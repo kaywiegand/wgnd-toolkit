@@ -49,7 +49,7 @@ def setup_matplotlib() -> None:
             "axes.titlesize":     14,
             "axes.titleweight":   "normal",
             "axes.titlelocation": "left",    # Titel immer linksbündig
-            "axes.titlepad":      14,
+            "axes.titlepad":      20,
             "axes.labelcolor":    cfg.CHART_LABEL,
             "axes.labelsize":     12,
             "axes.labelpad":      8,
@@ -139,7 +139,7 @@ def mpl_style() -> dict:
     """
     return {
         "title":   dict(loc="left", fontsize=14, color=cfg.CHART_TITLE,
-                        pad=14, fontweight="normal"),
+                        pad=20, fontweight="normal"),
         "label":   dict(fontsize=12, color=cfg.CHART_LABEL, labelpad=8),
         "ticks":   dict(colors=cfg.CHART_AXIS_TEXT, labelsize=11),
         "refline": dict(color=cfg.COLOR_NEUTRAL, linewidth=1.2,
