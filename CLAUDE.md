@@ -12,21 +12,24 @@
 | Paket | `wgnd` |
 | Typ | Python Toolkit (eigene Infrastruktur) |
 | Repo | `git@github.com:kaywiegand/wgnd-toolkit.git` |
-| Lokaler Pfad | `/Users/kaywiegand/Workspace/wgnd-toolkit` |
+| Lokaler Pfad | `wgnd-toolkit/` im Workspace-Root |
 
 ## Kontext-Einstieg
 
 1. `PROCESS_LOG.md` lesen — aktueller Stand, letzte Änderungen
 2. `ROADMAP.md` lesen — offene Features und Backlog
-3. Globale `CLAUDE.md` aus `/Users/kaywiegand/Workspace/` gilt weiterhin
+3. Globale `CLAUDE.md` aus dem Workspace-Root gilt weiterhin
 
 ## Struktur
 
 ```
 src/wgnd/
-├── __init__.py          ← öffentliche API
+├── __init__.py          ← öffentliche API (`__all__`)
 ├── inspect.py           ← EDA-Funktionen (inspect, inspect_*)
 ├── viz.py               ← Chart-Funktionen
+├── models.py            ← ModelTracker, save_model (sklearn/joblib funktions-lokal importiert)
+├── notes.py             ← EdaNotes + notes-Singleton
+├── utils.py             ← timer, memory_report, downcast
 ├── core/
 │   ├── config.py        ← WgndConfig — alle Farben, Paletten, Konstanten
 │   ├── theme.py         ← matplotlib/seaborn Theme-Setup
@@ -46,6 +49,6 @@ src/wgnd/
 
 In Projekten die wgnd nutzen — einmalig lokal verlinken:
 ```bash
-uv pip install -e /Users/kaywiegand/Workspace/wgnd-toolkit
+uv pip install -e ../wgnd-toolkit
 ```
 Danach reicht Kernel-Neustart. Kein `--refresh-package` nötig.

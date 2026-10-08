@@ -70,27 +70,33 @@ python -m ipykernel install --user --name wgnd --display-name "Python (wgnd)"
 ```toml
 # pyproject.toml des Projekts
 dependencies = [
-    "wgnd @ git+https://github.com/kaywiegand/wgnd-toolkit.git@main",
+    "wgnd @ git+https://github.com/kaywiegand/wgnd-toolkit.git@v0.3.0",
+    # DSC-Projekt (+ scikit-learn, xgboost, joblib):
+    # "wgnd[dsc] @ git+https://github.com/kaywiegand/wgnd-toolkit.git@v0.3.0",
 ]
 ```
 
 ```bash
-uv pip install -e ".[dan]"   # DAN-Projekt
-uv pip install -e ".[dsc]"   # DSC-Projekt (+ sklearn, xgboost, shap)
+uv pip install -e .          # im Projekt — zieht wgnd mit
 ```
 
-**Nach jedem Push ins wgnd-toolkit — Update ziehen:**
+Der Tag fixiert die Version — ein Update heißt: Tag in der `pyproject.toml` anheben,
+neu installieren, Kernel neu starten.
+
+**Parallel am Toolkit entwickeln** — lokal verlinken statt Tag:
 
 ```bash
-uv pip install -e ".[dan]" --refresh-package wgnd
-# → Kernel neu starten
+uv pip install -e ../wgnd-toolkit
+# → Änderungen wirken nach Kernel-Neustart
 ```
 
 **Erste Zelle jedes Notebooks:**
 
 ```python
-from ny_taxi_routes.notebook import *
-setup_plotting()
+from wgnd import setup, cfg, inspect
+from wgnd import success, warn, log, info_box, show_df, section_header
+
+setup()
 ```
 
 ---
@@ -102,13 +108,14 @@ wgnd-toolkit/
 ├── src/wgnd/
 │   ├── core/
 │   │   ├── config.py       ← Farben, Paletten, Größen (einzige Wahrheitsquelle)
-│   │   ├── theme.py        ← setup(), apply_theme(), mpl_style()
-│   │   └── _output.py      ← section_header(), info_box(), show_df(), log(), success(), warn()
+│   │   ├── theme.py        ← setup(), mpl_style()
+│   │   └── _output.py      ← section_header(), info_box(), show_df(), log(), success(), warn(), error()
 │   │
-│   ├── inspect.py          ← EDA: inspect() + 9 Sub-Funktionen
+│   ├── inspect.py          ← EDA: inspect() + 11 Sub-Funktionen, iqr_values()
 │   ├── viz.py              ← Charts (Matplotlib/Seaborn)
 │   ├── models.py           ← ModelTracker + save_model (DSC, benötigt dsc-Extra)
 │   ├── notes.py            ← EdaNotes: kategorisierter EDA-Notiz-Sammler
+│   ├── utils.py            ← timer, memory_report, downcast
 │   └── __init__.py         ← Direkt-Exports: setup, cfg, inspect, ModelTracker, EdaNotes, ...
 │
 ├── examples/
@@ -127,6 +134,7 @@ wgnd-toolkit/
 |---|---|
 | `inspect(df, sections=[...])` | Mehrere Sektionen auf einmal — gibt `None` zurück |
 | `inspect_dimensions(df)` | Shape, Duplikate, leere Zeilen/Spalten |
+| `inspect_memory(df)` | Speicherverbrauch |
 | `inspect_dtypes(df)` | Datentypen, Missing, Eindeutigkeit |
 | `inspect_missing(df)` | Fehlwert-Analyse + Heatmap |
 | `inspect_duplicates(df)` | Duplizierte Zeilen |
@@ -136,6 +144,7 @@ wgnd-toolkit/
 | `inspect_correlations(df)` | Korrelationsmatrix |
 | `inspect_outliers(df)` | IQR-basierte Ausreißer-Übersicht |
 | `inspect_outlier_detail(df, col)` | Detailanalyse einer Spalte |
+| `iqr_values(df, col)` | IQR-Kennwerte einer Spalte als Dict |
 
 ```python
 from wgnd import inspect
@@ -169,12 +178,26 @@ show_df(df.head(10), show_index=False) # ohne Index
 
 ### `wgnd.viz` — Charts
 
+Alle Funktionen geben `(fig, ax)` bzw. `(fig, axes)` zurück.
+
+| Funktion | Beschreibung |
+|---|---|
+| `bar(data, x, y, orient="v", ref_val=None, highlight_top_n=None)` | Balken, optional Referenzlinie und Top-N-Highlight |
+| `stacked_bar(df, cat_col, target_col, normalize=True)` | Gestapelte Balken, Prozent oder absolut |
+| `dual_axis(df, x, y_bar, y_line)` | Balken links + Linie rechts — gibt `(fig, ax1, ax2)` zurück |
+| `line(data, x, y, hue=None, ref_lines=None, spans=None)` | Linie mit Referenzlinien und Span-Markierungen |
+| `scatter_highlight(df, x, y, highlight_mask=None, hue=None)` | Scatter mit hervorgehobener Gruppe |
+| `grid_histplot(df, columns=None, hue=None, multiple="stack")` | Histogramm-Grid über numerische Spalten |
+| `grid_scatter(df, combinations, hue=None)` | Scatter-Grid für `(x, y)`-Paare |
+| `show_palettes()` | Alle Paletten als Farbstreifen |
+
 ```python
-from wgnd.viz import bar, bar_reference, scatter, distribution
-from wgnd.viz import time_series, heatmap, pairplot, boxplot, stacked_bar_pct
+from wgnd.viz import bar, scatter_highlight, grid_histplot
 
 fig, ax = bar(df, x="city", y="revenue", title="Revenue by City")
-fig, ax = scatter(df, x="trip_distance", y="fare_amount")
+fig, ax = scatter_highlight(df, x="trip_distance", y="fare_amount",
+                            highlight_mask=df["fare_amount"] > 100)
+fig, axes = grid_histplot(df, hue="is_churned", multiple="fill")
 ```
 
 ### `wgnd.models` — Modell-Tracking (DSC)
@@ -208,6 +231,18 @@ notes.add("FEATURE", "log-Transform auf 'price'")
 notes.show()                       # rendert eine kompakte HTML-Box im Notebook
 ```
 
+### `wgnd.utils` — Helfer
+
+```python
+from wgnd.utils import timer, memory_report, downcast
+
+@timer                             # Laufzeit der Funktion ausgeben
+def my_pipeline(df): ...
+
+memory_report(df)                  # Speicher pro Spalte, absteigend
+df = downcast(df)                  # int64/float64 → kleinere Typen (Kopie)
+```
+
 ---
 
 ## 5 · Chart-Guide — einheitlicher Look
@@ -226,28 +261,44 @@ from wgnd import cfg
 | Variable | Farbe | Wann benutzen |
 |---|---|---|
 | `cfg.COLOR_SIGNAL` | `#ffa600` Amber | Mittelwert-Linie, Trendlinie, Schwellwert |
-| `cfg.COLOR_POSITIVE` | `#488f31` Grün | explizit positiv |
+| `cfg.COLOR_POSITIVE` | `#25ac82` Teal-Grün | explizit positiv |
 | `cfg.COLOR_NEGATIVE` | `#de425b` Rot | Risiko, Fehler, kritisch |
 | `cfg.COLOR_NEUTRAL` | `#8c8c8c` Grau | neutrale Referenzlinien |
 
-**Paletten:**
+**Annotation-Farben** (fix — ändern sich beim Palettenwechsel nicht):
+
+| Variable | Farbe | Einsatz |
+|---|---|---|
+| `cfg.ANNO_MEAN` | `#ffa600` Amber | Mittelwert-Linie |
+| `cfg.ANNO_MEDIAN` | `#34618d` Blau | Median-Linie |
+| `cfg.ANNO_IQR_SOFT` | `#ffa600` Amber | 1.5× IQR Bounds |
+| `cfg.ANNO_IQR_HARD` | `#de425b` Rot | 3× IQR Bounds |
+| `cfg.ANNO_REF` | `#8c8c8c` Grau | neutrale Referenzlinie |
+
+**Paletten** — nach Rolle benannt, nicht nach Aussehen:
 
 | Variable | Beschreibung | Einsatz |
 |---|---|---|
-| `cfg.ACTIVE_PALETTE` | Aktive Palette (Standard: Ocean) | bar, scatter, groupby |
-| `cfg.PALETTE_OCEAN` | Blau → Orange (7 Farben) | kategorische Gruppen |
-| `cfg.PALETTE_PINK_TEAL` | Pink → Teal (10 Farben) | zweite Datenserie |
-| `cfg.PALETTE_BLUE_RANGE` | Sequential Blau dunkel→hell | Heatmaps |
-| `cfg.PALETTE_DIVERGENT` | Grün ↔ Creme ↔ Rot | Korrelations-Heatmaps |
+| `cfg.ACTIVE_PALETTE` | Aktive Palette (Standard: `PALETTE_CATEGORICAL`) | Datenfüllung in allen Charts |
+| `cfg.PALETTE_CATEGORICAL` | 10 Farben, viridis + PRGn Familie | mehrere Kategorien unterscheiden |
+| `cfg.PALETTE_DUAL` | 2 Farben, maximaler Kontrast | binäre Vergleiche |
+| `cfg.PALETTE_SEQ` | Colormap-Name `"viridis"` | Heatmaps, Intensität |
+| `cfg.PALETTE_DIV` | Colormap-Name `"PRGn"` | Abweichung vom Nullpunkt, Korrelationen |
+
+`cfg.palette_n(n)` liefert `n` gleichmäßig verteilte Farben aus `PALETTE_CATEGORICAL`.
 
 **Palette wechseln:**
 
 ```python
-# Zur Laufzeit im Notebook:
-cfg.use_palette("pink_teal")   # ocean | pink_teal | blue_range | blue_light
+# Zur Laufzeit im Notebook — wirkt sofort auf matplotlib + seaborn:
+cfg.use_palette("dual")                    # eigene: categorical | dual
+cfg.use_palette("viridis", n=8, show=True) # oder jeder Seaborn-Name
+
+from wgnd.viz import show_palettes
+show_palettes()                            # alle Paletten als Farbstreifen
 
 # Standard dauerhaft ändern — in src/wgnd/core/config.py:
-PALETTE_STANDARD = PALETTE_BLUE_RANGE   # ← hier tauschen
+PALETTE_STANDARD = PALETTE_CATEGORICAL     # ← hier tauschen
 ```
 
 ---
@@ -282,7 +333,7 @@ from wgnd import cfg
 
 sns.heatmap(corr_matrix,
     annot=True, fmt=".2f",
-    cmap=cfg.PALETTE_DIVERGENT,
+    cmap=cfg.PALETTE_DIV,
     center=0,
     linewidths=0.5,
 )
@@ -297,11 +348,11 @@ Alle Einstellungen in `src/wgnd/core/config.py` — eine Änderung wirkt überal
 ```python
 class WgndConfig:
     # Standard-Palette — hier einmalig wechseln:
-    PALETTE_STANDARD = PALETTE_OCEAN   # → PALETTE_BLUE_RANGE, PALETTE_PINK_TEAL, ...
+    PALETTE_STANDARD = PALETTE_CATEGORICAL   # → PALETTE_DUAL
 
     # Signal-Farben
     COLOR_SIGNAL   = "#ffa600"
-    COLOR_POSITIVE = "#488f31"
+    COLOR_POSITIVE = "#25ac82"
     COLOR_NEGATIVE = "#de425b"
     COLOR_NEUTRAL  = "#8c8c8c"
 
@@ -318,7 +369,7 @@ class WgndConfig:
     TABLE_TEXT      = "#000000"
 
     # Zahlen & Formate
-    DECIMAL_PLACES = 3
+    DECIMAL_PLACES = 2
 ```
 
 ---

@@ -7,7 +7,7 @@
 | Phase | Beschreibung | Status |
 | :--- | :--- | :--- |
 | 0 | Core: config, theme, output, inspect, viz, models (ModelTracker), notes (EdaNotes) | ✅ Stabil |
-| 1 | Polars-Support | 🟡 In Arbeit |
+| 1 | Polars-Support | 📋 Geplant — noch nicht begonnen |
 | 2 | Backlog-Features | 📋 Geplant |
 
 ---
@@ -27,7 +27,6 @@ Ziel: alle Toolkit-Funktionen akzeptieren sowohl `pd.DataFrame` als auch `pl.Dat
 
 - [ ] `PALETTE_EDA` + `cfg.use_palette("eda")` — gedämpfte EDA-Palette vs. Report-Palette
 - [ ] `show_df` — Text linksbündig, Zahlen rechtsbündig überall konsistent
-- [ ] `cfg.DECIMAL_PLACES` Default 3 → 2
 - [ ] Alle `inspect_*` — `return_df=True` Parameter (Standard: None zurückgeben)
 - [ ] `axes`-Pattern für Chart-Funktionen — externes Grid-Layout
 - [ ] Parquet Import/Export — `read_parquet(path)` / `write_parquet(df, path)`

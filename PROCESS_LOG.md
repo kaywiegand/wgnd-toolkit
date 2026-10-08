@@ -10,9 +10,9 @@
 | :--- | :--- |
 | Paket | `wgnd` |
 | Repo | `git@github.com:kaywiegand/wgnd-toolkit.git` |
-| Letzte Version | `v0.3.0` — ModelTracker, save_model, EdaNotes (lokal getaggt, Push separat) |
-| Status | ⚠️ In Arbeit — Phase 1 Polars-Support |
-| Nächster Schritt | `_ensure_pandas()` implementieren, inspect + show_df updaten |
+| Letzte Version | `v0.3.0` — ModelTracker, save_model, EdaNotes |
+| Status | Phase 0 stabil · Phase 1 (Polars-Support) noch nicht begonnen |
+| Nächster Schritt | `_ensure_pandas()` implementieren, inspect + show_df updaten (→ `ROADMAP.md` Phase 1) |
 
 ---
 
@@ -25,10 +25,36 @@
 | `ACTIVE_PALETTE` für Datenfüllung, `ANNO_*` für Linien | Saubere Trennung: Palette wechseln ändert nie Annotation-Farben |
 | `cfg.use_palette()` propagiert sofort zu mpl + seaborn | Einmal setzen — alle nachfolgenden Charts nutzen die neue Palette |
 | Polars-Support via `_ensure_pandas()` Konvertierung | Einfachste Lösung: Polars-Frame am Eingang konvertieren, restliche Logik bleibt pandas |
+| `__init__.py` importiert hart, kein `try/except` | Ein verschluckter Importfehler endet beim Nutzer als `NameError` ohne Ursache. `wgnd.models` braucht keinen Guard — sklearn/joblib werden dort funktions-lokal importiert |
 
 ---
 
 ## Verlauf
+
+Neueste Einträge oben.
+
+### 2026-10-08 — Cleanup: README, Lint, Meta-Files
+
+**Kontext:** Repo ist öffentlich und wird von einem Projekt als Dependency gebraucht.
+Bestandsaufnahme ergab: README dokumentierte in Teilen eine API, die es nicht mehr gibt.
+
+**Geändert:**
+- `README.md` — Kap. 2 (Einbindung), 3 (Struktur), 4 (`viz`, `inspect`, neu `utils`),
+  5 + 6 (Paletten, Farben, Config) auf den tatsächlichen Code gezogen.
+- `src/wgnd/__init__.py` — harte Imports + `__all__` statt `try/except Exception: pass`.
+- Ruff-Findings bereinigt (tote Imports, leere f-Strings, ungenutzte Variable),
+  `[tool.ruff]` in `pyproject.toml` ergänzt.
+- `CLAUDE.md` — Strukturblock vervollständigt, absolute lokale Pfade entfernt.
+- `ROADMAP.md` / `BACKLOG.md` — Erledigtes entfernt, Polars nur noch in der ROADMAP.
+
+**Entscheidungen:**
+- README-Einbindung zeigt auf den Tag statt auf `@main` → reproduzierbare Installs
+  in den Consumer-Projekten.
+- `CLAUDE.md`, `PROCESS_LOG.md`, `BACKLOG.md` bleiben getrackt — konsistent mit den
+  anderen Repos, kein sensibler Inhalt, sonst kein Backup.
+- LICENSE zurückgestellt (Toolkit ist primär für den Eigengebrauch).
+
+**Nächster Schritt:** Phase 1 Polars-Support (`ROADMAP.md`).
 
 ### 2026-07-10 — v0.3.0: ModelTracker + EdaNotes promotet (Workspace-Konsolidierung)
 
@@ -54,6 +80,25 @@ nicht im Toolkit. Bündel-Aktion: genuin allgemeine Bausteine **einmal** hierher
 `quito-traffic-jam` + `zomato-restaurant` als nicht-migrierbar ausgegliedert
 (Workspace-BACKLOG #25/#26). Release lokal getaggt `v0.3.0` — Push separat.
 
+### 2026-05-14 — Palette-System überarbeitet
+
+**Konzept:** Paletten nach Rolle statt nach Aussehen benannt.
+
+**Neu:**
+- `PALETTE_CATEGORICAL` — 10 Farben aus viridis + PRGn Familie (Option A)
+- `PALETTE_DUAL` — 2 Farben mit max. Kontrast für binäre Vergleiche
+- `PALETTE_SEQ = "viridis"` — Colormap-Name für Heatmaps / Intensität
+- `PALETTE_DIV = "PRGn"` — Colormap-Name für Abweichungen vom Nullpunkt
+- `show_palettes()` in viz.py zeigt neues System
+
+**Entfernt:** `PALETTE_OCEAN`, `PALETTE_PINK_TEAL`, `PALETTE_BLUE_RANGE`, `PALETTE_BLUE_LIGHT`, `PALETTE_DIVERGENT`
+
+**Warum:** Sequential-Palette war fälschlicherweise als Default gesetzt → ähnliche Blautöne in kategorischen Charts kaum unterscheidbar.
+
+### 2026-05-11 — Dokumentation angelegt
+
+- `CLAUDE.md`, `ROADMAP.md`, `PROCESS_LOG.md` erstellt
+
 ### 2026-04-22/23 — Große Refactor-Session (DAN_NewYork-Taxi-Routes)
 
 **Fixes:**
@@ -74,22 +119,3 @@ nicht im Toolkit. Bündel-Aktion: genuin allgemeine Bausteine **einmal** hierher
 - `inspect_outlier_detail()` akzeptiert `figsize` Parameter
 - `inspect_duplicates` gibt nur zu löschende Zeilen zurück (`keep="first"`)
 - `_is_dark()` Hilfsfunktion für Lesbarkeit auf dunklen Farbflächen
-
-### 2026-05-14 — Palette-System überarbeitet
-
-**Konzept:** Paletten nach Rolle statt nach Aussehen benannt.
-
-**Neu:**
-- `PALETTE_CATEGORICAL` — 10 Farben aus viridis + PRGn Familie (Option A)
-- `PALETTE_DUAL` — 2 Farben mit max. Kontrast für binäre Vergleiche
-- `PALETTE_SEQ = "viridis"` — Colormap-Name für Heatmaps / Intensität
-- `PALETTE_DIV = "PRGn"` — Colormap-Name für Abweichungen vom Nullpunkt
-- `show_palettes()` in viz.py zeigt neues System
-
-**Entfernt:** `PALETTE_OCEAN`, `PALETTE_PINK_TEAL`, `PALETTE_BLUE_RANGE`, `PALETTE_BLUE_LIGHT`, `PALETTE_DIVERGENT`
-
-**Warum:** Sequential-Palette war fälschlicherweise als Default gesetzt → ähnliche Blautöne in kategorischen Charts kaum unterscheidbar.
-
-### 2026-05-11 — Dokumentation angelegt
-
-- `CLAUDE.md`, `ROADMAP.md`, `PROCESS_LOG.md` erstellt
