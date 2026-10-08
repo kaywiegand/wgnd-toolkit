@@ -10,7 +10,7 @@
 | :--- | :--- |
 | Paket | `wgnd` |
 | Repo | `git@github.com:kaywiegand/wgnd-toolkit.git` |
-| Letzte Version | `v0.3.0` — ModelTracker, save_model, EdaNotes |
+| Letzte Version | `v0.4.0` — Plotly-Theme (zuvor v0.3.0: ModelTracker, save_model, EdaNotes) |
 | Status | Phase 0 stabil · Phase 1 (Polars-Support) noch nicht begonnen |
 | Nächster Schritt | `_ensure_pandas()` implementieren, inspect + show_df updaten (→ `ROADMAP.md` Phase 1) |
 
@@ -32,6 +32,11 @@
 ## Verlauf
 
 Neueste Einträge oben.
+
+### 2026-10-08 — v0.4.0: Plotly-Theme
+
+- Neues Modul `wgnd.plotly_theme` (`register`, `template`, `sequential_scale`, `diverging_scale`), Extra `plotly`, Tests in `tests/test_plotly_theme.py`.
+- Anlass: `berlin-emergency-response` (S3) braucht Plotly-Look aus der `wgnd`-Palette. Einbindung dort per Git-URL erst nach Push.
 
 ### 2026-10-08 — Cleanup: README, Lint, Meta-Files
 

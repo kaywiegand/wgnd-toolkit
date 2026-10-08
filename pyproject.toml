@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name        = "wgnd"
-version     = "0.3.0"
+version     = "0.4.0"
 description = "Wiegand Data Toolkit – EDA & Visualisierung für DAN & DSC Projekte"
 readme      = "README.md"
 requires-python = ">=3.10"
@@ -29,6 +29,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+plotly = [
+    "plotly>=5.18",
+]
 dsc = [
     "scikit-learn>=1.3",
     "xgboost>=2.0",

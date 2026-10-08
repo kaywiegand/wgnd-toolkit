@@ -200,6 +200,23 @@ fig, ax = scatter_highlight(df, x="trip_distance", y="fare_amount",
 fig, axes = grid_histplot(df, hue="is_churned", multiple="fill")
 ```
 
+### `wgnd.plotly_theme` — Plotly im wgnd-Look
+
+Extra: `pip install "wgnd[plotly]"`. Palette und Chart-Farben kommen aus `cfg`.
+
+| Funktion | Beschreibung |
+|---|---|
+| `register(name="wgnd", default=True)` | Template registrieren und als Plotly-Default setzen |
+| `template()` | `plotly.graph_objects.layout.Template` ohne Registrierung |
+| `sequential_scale(n)` / `diverging_scale(n)` | Hex-Listen aus `cfg.PALETTE_SEQ` / `cfg.PALETTE_DIV` |
+
+```python
+from wgnd.plotly_theme import register, sequential_scale
+register()
+fig = px.choropleth_map(df, geojson=gj, locations="id", color="share",
+                        color_continuous_scale=sequential_scale())
+```
+
 ### `wgnd.models` — Modell-Tracking (DSC)
 
 Klassifikations-Tracking. Benötigt das `dsc`-Extra (`scikit-learn`, `joblib`);

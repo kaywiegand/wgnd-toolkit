@@ -1,5 +1,5 @@
 """
-wgnd – Wiegand Data Toolkit v0.3.0
+wgnd – Wiegand Data Toolkit v0.4.0
 ===================================
 EDA & Visualisierung für DAN & DSC Projekte.
 
@@ -9,11 +9,13 @@ Schnellstart (erste Notebook-Zelle):
 
 Modellierung (DSC, benötigt das ``dsc``-Extra: scikit-learn/joblib):
     from wgnd import ModelTracker, save_model
+Plotly-Theme (Extra ``plotly``):
+    from wgnd.plotly_theme import register, sequential_scale
 EDA-Notizen:
     from wgnd import EdaNotes, notes
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 __author__  = "Wiegand"
 
 from wgnd.core.theme import setup
