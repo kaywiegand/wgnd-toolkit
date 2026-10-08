@@ -50,7 +50,7 @@ def show_palettes() -> None:
 
     palettes = {
         f"CATEGORICAL  (mehrere Gruppen, {len(cfg.PALETTE_CATEGORICAL)} Farben)": cfg.PALETTE_CATEGORICAL,
-        f"DUAL         (binär, 2 Farben)":                                         cfg.PALETTE_DUAL,
+        "DUAL         (binär, 2 Farben)":                                          cfg.PALETTE_DUAL,
         f"SEQ          (sequential, Colormap: {cfg.PALETTE_SEQ})":                 sns.color_palette(cfg.PALETTE_SEQ, 10).as_hex(),
         f"DIV          (divergent, Colormap: {cfg.PALETTE_DIV})":                  sns.color_palette(cfg.PALETTE_DIV, 11).as_hex(),
         "Signals       (semantic, fix)":                                            [
@@ -211,7 +211,6 @@ def stacked_bar(
             color=c[:len(ct.columns)], ax=ax, edgecolor="none", width=0.7)
 
     if normalize:
-        suffix = "%"
         lim    = [0, 100]
         if orient == "h":
             ax.set_xlim(*lim)

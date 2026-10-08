@@ -70,7 +70,7 @@ def info_box(data: dict[str, Any], title: str = "") -> None:
         title: Paneltitel (leer = kein Titel in der Rahmenzeile).
     """
     table = Table(show_header=False, box=None, padding=(0, 2, 0, 0))
-    table.add_column(style=f"dim", min_width=18, no_wrap=True)
+    table.add_column(style="dim", min_width=18, no_wrap=True)
     table.add_column()
 
     for key, val in data.items():
@@ -132,7 +132,7 @@ def show_df(
         # Formatierung: pct → 2 Stellen + %, rest → DECIMAL_PLACES Stellen
         fmt = {}
         for col in pct_cols:
-            fmt[col] = f"{{:.2f}}%"
+            fmt[col] = "{:.2f}%"
         for col in other_float:
             fmt[col] = f"{{:.{cfg.DECIMAL_PLACES}f}}"
 

@@ -16,7 +16,7 @@ from typing import Callable
 
 import pandas as pd
 
-from wgnd.core._output import console, section_header, show_df
+from wgnd.core._output import console, show_df
 from wgnd.core.config import cfg
 
 

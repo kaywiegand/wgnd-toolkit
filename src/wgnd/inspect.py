@@ -21,11 +21,10 @@ Schnellstart:
 
 from __future__ import annotations
 
-import warnings
 import numpy as np
 import pandas as pd
 
-from wgnd.core._output import console, section_header, show_df, warn, success, error, log as _log
+from wgnd.core._output import section_header, show_df, warn, success, error, log as _log
 from wgnd.core.config import cfg
 
 # Runden: zentral aus config
@@ -677,9 +676,9 @@ def inspect_outlier_detail(
     vlines = [
         (mean,   cfg.ANNO_MEAN,     "-",  1.8, f"Mean: {_r(mean)}"),
         (median, cfg.ANNO_MEDIAN,   "-",  1.8, f"Median: {_r(median)}"),
-        (l15,    cfg.ANNO_IQR_SOFT, ":",  1.2, f"1.5× IQR lower"),
+        (l15,    cfg.ANNO_IQR_SOFT, ":",  1.2, "1.5× IQR lower"),
         (u15,    cfg.ANNO_IQR_SOFT, ":",  1.2, f"1.5× IQR upper  ({c15} outliers)"),
-        (l30,    cfg.ANNO_IQR_HARD, ":",  1.2, f"3× IQR lower"),
+        (l30,    cfg.ANNO_IQR_HARD, ":",  1.2, "3× IQR lower"),
         (u30,    cfg.ANNO_IQR_HARD, ":",  1.2, f"3× IQR upper  ({c30} outliers)"),
     ]
     for ax in (ax_box, ax_hist):

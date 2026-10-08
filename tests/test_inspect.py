@@ -19,7 +19,6 @@ from wgnd.inspect import (
     inspect_duplicates,
     inspect_memory,
     inspect_missing,
-    inspect_names,
     inspect_numeric_stats,
     inspect_categorical_stats,
     inspect_outliers,

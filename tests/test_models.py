@@ -7,8 +7,6 @@ Nutzt tmp_path für alle Datei-Operationen; keine echten Modelle nötig
 (ein Dummy mit ``fit``/``predict`` reicht als Export-Objekt).
 """
 
-import os
-
 import pandas as pd
 import pytest
 
